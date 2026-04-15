@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MotaLab — Cartão Fidelidade Saúde</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <link rel="stylesheet" href="motalab.css">
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+<div class="loading-ov" id="loadingOv">
+  <div class="spinner"></div>
+  <p id="loadingMsg">Processando...</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="goHome()">
+      <img src="./img/logo-motalab.png" alt="MotaLab" class="nav-logo-img-real">
+    </div>
+    <div class="nav-actions">
+      <button class="nav-login" onclick="abrirLogin()">Entrar</button>
+      <button class="nav-cta"   onclick="abrirCadastro()">Quero meu cartão →</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     TELA 1 — LANDING
+══════════════════════════════════════════════ -->
+<div class="screen active" id="landingScreen">
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Cartão Fidelidade Saúde · São Sebastião de Lagoa de Roça · Queimadas · Alagoa Nova
+      </div>
+      <h2>Cuide da sua saúde<br>por <em>muito menos</em></h2>
+      <p>
+        O Cartão Fidelidade MotaLab oferece descontos de até
+        <strong style="color:var(--teal-light)">50%</strong>
+        em exames, consultas e farmácias para você e toda a sua família —
+        por apenas R$ 70,00 ao ano.
+      </p>
+      <div class="hero-card">
+        <img src="./img/card_frente.png" alt="Cartão Fidelidade MotaLab" class="hero-card-img">
+      </div>
+      <button class="hero-btn" onclick="abrirCadastro()">
+        Quero meu Cartão Fidelidade
+        <span>Apenas R$ 70,00 por ano · Ativação imediata via Pix</span>
+      </button>
+    </div>
+  </section>
+
+  <div class="price-banner">
+    <div class="price-banner-inner">
+      <p>Plano anual completo por apenas</p>
+      <div class="price-big"><sup>R$</sup>70<span style="font-size:19px;align-self:flex-end;margin-bottom:3px;">,00</span></div>
+      <div><div class="price-badge">1 titular + até 5 dependentes</div></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-title">
+      <div class="tag">✦ Benefícios exclusivos</div>
+      <h3>Tudo que você precisa<br><span>por um preço justo</span></h3>
+      <p>Saúde de qualidade não precisa custar caro. Com o Cartão MotaLab, você e sua família têm acesso ao melhor da saúde local.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="bc"><div class="bc-icon">🔬</div><h4>Exames Laboratoriais</h4><div class="bc-val">50% OFF</div><p>Desconto em todos os exames laboratoriais realizados nas unidades MotaLab.</p></div>
+      <div class="bc"><div class="bc-icon">🩺</div><h4>Consultas Especializadas</h4><div class="bc-val">40% OFF</div><p>Cardiologia, Pediatria, Ginecologia, Psiquiatria, Nutrição e Geriatria com desconto garantido.</p></div>
+      <div class="bc"><div class="bc-icon">👨‍⚕️</div><h4>Clínico Geral</h4><div class="bc-val">R$ 49,90</div><p>Consulta com Clínico Geral por valor fixo e acessível, sem surpresas.</p></div>
+      <div class="bc"><div class="bc-icon">💊</div><h4>Rede de Farmácias</h4><p>Descontos exclusivos na rede de farmácias <strong>Farma Lagos</strong>.</p></div>
+      <div class="bc"><div class="bc-icon">👨‍👩‍👧‍👦</div><h4>Família protegida</h4><p>O plano cobre <strong>1 titular + até 5 dependentes</strong>.</p></div>
+      <div class="bc"><div class="bc-icon">📅</div><h4>Validade de 12 meses</h4><p>Seu cartão fica ativo por <strong>um ano inteiro</strong> com renovação simples.</p></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-col"><h4>✅ Com o Cartão MotaLab</h4><ul><li><span class="ck">✓</span> Exames com até 50% de desconto</li><li><span class="ck">✓</span> Consultas especializadas acessíveis</li><li><span class="ck">✓</span> Clínico Geral por R$ 49,90</li><li><span class="ck">✓</span> Descontos em farmácias parceiras</li><li><span class="ck">✓</span> Toda a família incluída</li><li><span class="ck">✓</span> Apenas R$ 70,00 por ano</li><li><span class="ck">✓</span> Ativação imediata via Pix</li></ul></div>
+      <div class="compare-col"><h4>❌ Sem o cartão</h4><ul><li><span class="cx">✗</span> Exames pelo preço cheio</li><li><span class="cx">✗</span> Consultas a R$ 200–400+</li><li><span class="cx">✗</span> Sem benefício em farmácias</li><li><span class="cx">✗</span> Cada familiar paga separado</li><li><span class="cx">✗</span> Gastos imprevisíveis com saúde</li><li><span class="cx">✗</span> Sem suporte especializado</li><li><span class="cx">✗</span> Sem prioridade no atendimento</li></ul></div>
+    </div>
+    <div class="section-title" style="margin-bottom:28px;"><div class="tag">📋 Condições do plano</div><h3>Simples, claro e <span>transparente</span></h3></div>
+    <div class="cond-grid">
+      <div class="cc"><div class="ci">📅</div><h5>Validade</h5><p>12 meses com renovação anual</p></div>
+      <div class="cc"><div class="ci">👥</div><h5>Cobertura</h5><p>1 titular + até 5 dependentes</p></div>
+      <div class="cc"><div class="ci">💳</div><h5>Adicional</h5><p>Cartão extra por R$ 20,00</p></div>
+      <div class="cc"><div class="ci">📍</div><h5>Onde usar</h5><p>São Sebastião de Lagoa de Roça · Queimadas · Alagoa Nova — PB</p></div>
+    </div>
+    <div class="warn-box"><p><strong>⚠️ Importante:</strong> O Cartão Fidelidade MotaLab é pessoal e intransferível. Não se trata de plano de saúde regulamentado pela ANS. Não há reembolso em caso de cancelamento.</p></div>
+  </section>
+
+  <section class="cta-section">
+    <h3>Garanta já o seu<br>Cartão Fidelidade</h3>
+    <p>Cadastre-se, pague via Pix e receba seu cartão digital na hora.</p>
+    <button class="cta-btn" onclick="abrirCadastro()">Quero meu Cartão — R$ 70,00 ›</button>
+  </section>
+
+  <footer>
+    <p><strong>MotaLab — Laboratório e Clínica Médica</strong></p>
+    <p>CNPJ: 43.909.626/0001-28 · Rua José Rodrigues Coura, nº 51 — São Sebastião de Lagoa de Roça / PB</p>
+    <p>📍 Unidades também em <strong>Queimadas / PB</strong> e <strong>Alagoa Nova / PB</strong></p>
+    <p>📞 <a href="tel:83988695500">(83) 98869-5500</a> &nbsp;·&nbsp; <a href="tel:83991239706">(83) 99123-9706</a></p>
+    <p style="margin-top:10px;opacity:0.45;">© 2026 MotaLab. Todos os direitos reservados.</p>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TELA 2 — HOME DO USUÁRIO
+══════════════════════════════════════════════ -->
+<div class="screen" id="homeScreen">
+  <div class="home-inner">
+
+    <div class="welcome-bar">
+      <div>
+        <div class="wb-greeting">Bem-vindo(a) ao MotaLab Fidelidade</div>
+        <div class="wb-name" id="hwbName">—</div>
+      </div>
+      <div class="wb-status"><div class="wb-dot"></div>Cartão Ativo</div>
+    </div>
+
+    <!-- ══ CARTÃO DIGITAL ══ -->
+    <div class="sec-lbl">Seu Cartão Digital — toque para virar</div>
+
+    <div class="dc-wrap">
+      <div class="dc-inner" id="dcInner" onclick="flipCard()">
+
+        <!-- ── FRENTE: imagem real + foto redonda + nome/número ── -->
+        <div class="dc-face dc-front-real">
+          <img src="./img/ChatGPT Image 13 de abr. de 2026, 18_46_40.png" alt="Frente do Cartão MotaLab" class="card-real-img">
+
+          <!-- Foto do titular — sobreposta à frente -->
+          <div class="card-photo-wrap" id="cardPhotoWrap" onclick="event.stopPropagation(); document.getElementById('photoInput').click()">
+            <div class="card-photo-placeholder" id="cardPhotoPlaceholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            <img id="cardPhotoImg" class="card-photo-img" src="" alt="Foto">
+            <div class="card-photo-edit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
+          </div>
+
+          <!-- Nome e número do titular -->
+          <div class="card-overlay-front">
+            <div class="cof-name" id="dcName">NOME DO TITULAR</div>
+            <div class="cof-num"  id="dcNum">N° 0000001</div>
+          </div>
+        </div>
+
+        <!-- ── VERSO: imagem real + dados dos participantes (sem QR) ── -->
+        <div class="dc-face dc-back-real">
+          <img src="./img/card_verso.png" alt="Verso do Cartão MotaLab" class="card-real-img-back">
+
+          <!-- Participantes — área inferior do verso -->
+          <div class="cob-members" id="cobMembers">
+            <!-- preenchido via JS -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="dc-hint">Toque no cartão para virar · <span onclick="flipCard()">ver o verso</span></div>
+
+    <!-- Botão trocar foto -->
+    <div class="add-photo" onclick="document.getElementById('photoInput').click()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="12" cy="12" r="4"/><path d="M9 5V4a1 1 0 011-1h4a1 1 0 011 1v1"/></svg>
+      Adicionar / trocar foto no cartão
+    </div>
+    <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(this)" style="display:none">
+
+    <!-- BENEFÍCIOS -->
+    <div class="sec-lbl" style="margin-top:6px;">Seus benefícios ativos</div>
+    <div class="bm-grid">
+      <div class="bm"><div class="bi">🔬</div><div class="bv">50%</div><div class="bt">Exames laboratoriais</div></div>
+      <div class="bm"><div class="bi">🩺</div><div class="bv">40%</div><div class="bt">Consultas especializadas</div></div>
+      <div class="bm"><div class="bi">👨‍⚕️</div><div class="bv">R$49</div><div class="bt">Clínico Geral</div></div>
+      <div class="bm"><div class="bi">💊</div><div class="bv">%OFF</div><div class="bt">Farma Lagos</div></div>
+    </div>
+
+    <!-- DADOS DO CADASTRO -->
+    <div class="sec-lbl">Dados do cadastro</div>
+    <div class="info-sec">
+      <div class="ir"><span class="ir-l">Nome</span><span class="ir-v" id="infoNome">—</span></div>
+      <div class="ir"><span class="ir-l">CPF</span><span class="ir-v" id="infoCpf">—</span></div>
+      <div class="ir"><span class="ir-l">E-mail</span><span class="ir-v" id="infoEmail">—</span></div>
+      <div class="ir"><span class="ir-l">Nº do cartão</span><span class="ir-v" id="infoNum">—</span></div>
+      <div class="ir"><span class="ir-l">Válido até</span><span class="ir-v" id="infoVal">—</span></div>
+      <div class="ir"><span class="ir-l">Status</span><span class="ir-v" style="color:var(--green-ok);font-weight:700;">✅ Ativo</span></div>
+    </div>
+
+    <!-- PARTICIPANTES -->
+    <div class="sec-lbl">Participantes do plano <span id="memberCount" style="color:var(--teal-dark);font-weight:800;"></span></div>
+    <div class="members-panel" id="membersPanel"></div>
+    <button class="add-member-btn" id="addMemberBtn" onclick="abrirAddMembro()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg>
+      Adicionar participante
+    </button>
+
+    <div style="background:var(--teal-pale);border-radius:12px;padding:13px 15px;margin:14px 0 18px;">
+      <p style="font-size:12px;color:var(--teal-deeper);line-height:1.8;">
+        📍 <strong>Locais de uso:</strong><br>
+        · MotaLab São Sebastião de Lagoa de Roça — Rua José Rodrigues Coura, nº 51<br>
+        · MotaLab Queimadas / PB<br>
+        · MotaLab Alagoa Nova / PB<br>
+        📞 <strong>(83) 98869-5500</strong> &nbsp;·&nbsp; <strong>(83) 99123-9706</strong>
+      </p>
+    </div>
+
+    <button class="logout-btn" onclick="logout()">Sair da conta</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL LOGIN
+══════════════════════════════════════════════════════════ -->
+<div class="modal-ov" id="modalLogin">
+  <div class="modal-box">
+    <div class="mh" style="padding-bottom:22px;">
+      <div class="mh-logo"><img src="./img/logo-motalab.png" alt="MotaLab" class="modal-logo-img"></div>
+      <div style="text-align:center;margin-top:6px;">
+        <p style="color:rgba(255,255,255,0.85);font-size:13px;font-weight:600;">Acesse seu Cartão Fidelidade</p>
+      </div>
+    </div>
+    <div class="mb">
+      <div class="mb-title">Entrar na minha conta</div>
+      <div class="mb-desc">Informe seu e-mail e senha para acessar seu cartão digital.</div>
+      <div class="field">
+        <label>E-mail</label>
+        <input type="email" id="lEmail" placeholder="seu@email.com.br">
+        <div class="errmsg">E-mail inválido</div>
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" id="lSenha" placeholder="Sua senha">
+        <div class="errmsg">Senha incorreta</div>
+      </div>
+      <div class="login-err" id="loginErr" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        E-mail ou senha incorretos.
+      </div>
+      <button class="btn-p" onclick="fazerLogin()">Entrar na minha conta →</button>
+      <button class="btn-s" onclick="fecharLogin()">Cancelar</button>
+      <div class="login-sep">Não tem conta ainda?</div>
+      <button class="btn-outline-teal" onclick="fecharLogin(); abrirCadastro();">Quero me cadastrar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL CADASTRO / FAMÍLIA / PAGAMENTO / SUCESSO
+══════════════════════════════════════════════════════════ -->
+<div class="modal-ov" id="modalOv">
+  <div class="modal-box" id="modalBox">
+    <div class="mh">
+      <div class="mh-logo"><img src="./img/logo-motalab.png" alt="MotaLab" class="modal-logo-img"></div>
+      <div class="mh-steps">
+        <div class="mstep active" id="ms1"><div class="mstep-c">1</div><span class="mstep-l">CADASTRO</span></div>
+        <div class="mstep"        id="ms2"><div class="mstep-c">2</div><span class="mstep-l">FAMÍLIA</span></div>
+        <div class="mstep"        id="ms3"><div class="mstep-c">3</div><span class="mstep-l">PAGAMENTO</span></div>
+        <div class="mstep"        id="ms4"><div class="mstep-c">✓</div><span class="mstep-l">CARTÃO</span></div>
+      </div>
+    </div>
+
+    <!-- STEP 1 -->
+    <div id="s-cad" class="mb">
+      <div class="mb-title">Criar sua conta</div>
+      <div class="mb-desc">Preencha seus dados para emitir seu Cartão Fidelidade MotaLab.</div>
+      <div class="field"><label>Nome completo</label><input type="text" id="iNome" placeholder="Seu nome completo"><div class="errmsg">Informe seu nome completo (nome e sobrenome)</div></div>
+      <div class="row2">
+        <div class="field"><label>CPF</label><input type="text" id="iCpf" placeholder="000.000.000-00" maxlength="14"><div class="errmsg">CPF inválido</div></div>
+        <div class="field"><label>Data de nascimento</label><input type="date" id="iNasc"><div class="errmsg">Informe a data</div></div>
+      </div>
+      <div class="field"><label>E-mail</label><input type="email" id="iEmail" placeholder="seu@email.com.br"><div class="errmsg">E-mail inválido</div></div>
+      <div class="row2">
+        <div class="field"><label>Senha</label><input type="password" id="iSenha" placeholder="Mínimo 6 caracteres"><div class="errmsg">Mínimo 6 caracteres</div></div>
+        <div class="field"><label>Confirmar senha</label><input type="password" id="iConf" placeholder="Repita a senha"><div class="errmsg">Senhas diferentes</div></div>
+      </div>
+      <button class="btn-p" onclick="goToDeps()">Continuar — Adicionar família →</button>
+      <button class="btn-s" onclick="fecharModal()">Cancelar</button>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="s-dep" class="mb" style="display:none;">
+      <div class="mb-title">👨‍👩‍👧‍👦 Participantes do plano</div>
+      <div class="mb-desc">Adicione até <strong>5 participantes</strong> que terão acesso aos benefícios. Você pode pular e adicionar depois.</div>
+      <div id="depList" style="margin-bottom:10px;"></div>
+      <button class="btn-add-dep" id="btnAddDep" onclick="adicionarDepForm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Adicionar participante
+      </button>
+      <div class="dep-counter" id="depCounter">0 de 5 vagas preenchidas</div>
+      <button class="btn-p" style="margin-top:12px;" onclick="goToPix()">Continuar para pagamento →</button>
+      <button class="btn-s" onclick="voltarCad()">← Voltar</button>
+    </div>
+
+    <!-- STEP 3 -->
+    <div id="s-pix" class="mb" style="display:none;">
+      <div class="mb-title">Pagamento via Pix</div>
+      <div class="mb-desc">Realize o pagamento e seu cartão será ativado <strong>instantaneamente</strong>.</div>
+      <div class="pix-val-box"><div class="pix-R"><sup>R$</sup>70<span style="font-size:18px;">,00</span></div><div class="pix-lbl">Adesão Anual · Cartão Fidelidade MotaLab</div></div>
+      <div class="pix-qr-wrap"><div class="pix-qr-title">📱 Escaneie o QR Code Pix</div><div class="pix-qr-img-wrap"><canvas id="pixQrCanvas" width="160" height="160"></canvas></div><p class="pix-qr-hint">Aponte a câmera do seu banco para o QR Code acima ou use a chave abaixo.</p></div>
+      <div class="pix-key-wrap"><div class="pix-key-lbl">🔑 Ou pague pela chave Pix — CNPJ MotaLab</div><div class="pix-key-val">43.909.626/0001-28</div><div class="pix-actions"><button class="copy-btn" onclick="copiarPix()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar chave Pix</button></div></div>
+      <div class="pix-instr"><p><strong>Como pagar:</strong><br>1. Escaneie o QR Code <em>ou</em> abra o app do banco → Pix<br>2. Escolha <strong>Pix Copia e Cola</strong> ou <strong>Por Chave</strong><br>3. Cole a chave e confirme o valor de <strong>R$ 70,00</strong><br>4. Clique em <strong>"Já realizei o pagamento"</strong> abaixo</p></div>
+      <div class="pix-bar"><div class="pb-dot"></div><div class="pb-txt">Após confirmar no banco, clique abaixo para ativar seu cartão imediatamente.</div></div>
+      <button class="btn-p" onclick="confirmarPix()">✅ Já realizei o pagamento — Ativar meu cartão</button>
+      <button class="btn-s" onclick="voltarDep()">← Voltar</button>
+    </div>
+
+    <!-- STEP 4 -->
+    <div id="s-ok" class="mb" style="display:none; text-align:center;">
+      <div class="scheck"><svg viewBox="0 0 40 40" fill="none"><path d="M8 20 L16 28 L32 12" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="mb-title" style="text-align:center;font-size:21px;">Cartão ativado! 🎉</div>
+      <div class="mb-desc" style="text-align:center;margin-top:8px;">Seu Cartão Fidelidade MotaLab está ativo e pronto para uso.<br>Acesse agora seu cartão digital.</div>
+      <button class="btn-p" style="margin-top:20px;" onclick="irHome()">Ver meu Cartão Digital →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Adicionar participante (home) -->
+<div class="modal-ov" id="modalMembro">
+  <div class="modal-box">
+    <div class="mh">
+      <div class="mh-logo"><img src="logo-motalab.png" alt="MotaLab" class="modal-logo-img"></div>
+    </div>
+    <div class="mb">
+      <div class="mb-title">Adicionar participante</div>
+      <div class="mb-desc">Preencha os dados de quem vai compartilhar o plano com você.</div>
+      <div class="field"><label>Nome completo</label><input type="text" id="mNome" placeholder="Nome do participante"><div class="errmsg">Informe o nome completo</div></div>
+      <div class="row2">
+        <div class="field"><label>CPF</label><input type="text" id="mCpf" placeholder="000.000.000-00" maxlength="14"><div class="errmsg">CPF inválido</div></div>
+        <div class="field">
+          <label>Parentesco</label>
+          <select id="mParentesco" class="field-select">
+            <option value="Cônjuge">Cônjuge</option>
+            <option value="Filho(a)">Filho(a)</option>
+            <option value="Pai / Mãe">Pai / Mãe</option>
+            <option value="Irmão(ã)">Irmão(ã)</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-p" onclick="salvarMembro()">Adicionar ao plano ✓</button>
+      <button class="btn-s" onclick="fecharModalMembro()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script src="motalab.js"></script>
+</body>
+</html>
