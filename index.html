@@ -10,10 +10,23 @@
 </head>
 <body>
 
+<!-- ── FEEDBACK GLOBAL ── -->
 <div class="toast" id="toast"></div>
 <div class="loading-ov" id="loadingOv">
   <div class="spinner"></div>
   <p id="loadingMsg">Processando...</p>
+</div>
+
+<!-- ── MODAL DE CONFIRMAÇÃO (substitui window.confirm) ── -->
+<div class="modal-ov" id="modalConfirm">
+  <div class="modal-box confirm-box">
+    <div class="confirm-icon">⚠️</div>
+    <div class="confirm-msg" id="confirmMsg">Tem certeza?</div>
+    <div class="confirm-actions">
+      <button class="btn-confirm-sim" id="confirmSim">Confirmar</button>
+      <button class="btn-confirm-nao" id="confirmNao">Cancelar</button>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════════
@@ -24,9 +37,17 @@
     <div class="nav-logo" onclick="goHome()">
       <img src="img/logo-motalab.png" alt="MotaLab" class="nav-logo-img-real">
     </div>
-    <div class="nav-actions">
+    <div class="nav-actions" id="navGuest">
       <button class="nav-login" onclick="abrirLogin()">Entrar</button>
       <button class="nav-cta"   onclick="abrirCadastro()">Quero meu cartão →</button>
+    </div>
+    <div class="nav-user" id="navUser" style="display:none;" onclick="goHome()">
+      <div class="nav-avatar" id="navAvatar">M</div>
+      <div class="nav-user-info">
+        <div class="nav-user-name" id="navUserName">—</div>
+        <div class="nav-user-sub">Meu Cartão MotaLab</div>
+      </div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
   </div>
 </nav>
@@ -123,41 +144,90 @@
       <div class="wb-status"><div class="wb-dot"></div>Cartão Ativo</div>
     </div>
 
-    <!-- ══ CARTÃO DIGITAL ══ -->
+    <!-- CARTÃO DIGITAL -->
     <div class="sec-lbl">Seu Cartão Digital — toque para virar</div>
 
     <div class="dc-wrap">
       <div class="dc-inner" id="dcInner" onclick="flipCard()">
 
-        <!-- ── FRENTE: imagem real + foto redonda + nome/número ── -->
-        <div class="dc-face dc-front-real">
-          <img src="img/ChatGPT Image 13 de abr. de 2026, 18_46_40.png" alt="Frente do Cartão MotaLab" class="card-real-img">
+        <!-- FRENTE — cartão CSS puro -->
+        <div class="dc-face dc-front-css">
+          <!-- Fundo gradiente + elementos decorativos -->
+          <div class="cf-bg">
+            <div class="cf-circle cf-c1"></div>
+            <div class="cf-circle cf-c2"></div>
+            <div class="cf-circle cf-c3"></div>
+            <!-- Ícone de frasco de laboratório -->
+            <svg class="cf-flask" viewBox="0 0 80 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M28 8 L28 42 L8 78 Q4 86 12 90 L68 90 Q76 86 72 78 L52 42 L52 8 Z" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+              <path d="M28 55 L72 78 Q76 86 68 90 L12 90 Q4 86 8 78 Z" fill="rgba(255,255,255,0.10)"/>
+              <circle cx="22" cy="72" r="5" fill="rgba(255,255,255,0.22)"/>
+              <circle cx="38" cy="80" r="3" fill="rgba(255,255,255,0.18)"/>
+              <circle cx="55" cy="70" r="4" fill="rgba(255,255,255,0.15)"/>
+              <line x1="22" y1="8" x2="58" y2="8" stroke="rgba(255,255,255,0.35)" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
 
-          <!-- Foto do titular — sobreposta à frente -->
-          <div class="card-photo-wrap" id="cardPhotoWrap" onclick="event.stopPropagation(); document.getElementById('photoInput').click()">
-            <div class="card-photo-placeholder" id="cardPhotoPlaceholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <!-- Topo: logo + subtítulo -->
+          <div class="cf-top">
+            <div class="cf-brand">
+              <div class="cf-brand-dot">
+                <svg viewBox="0 0 24 24" fill="none" width="11" height="11"><circle cx="12" cy="8" r="4" fill="white"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div class="cf-brand-name">MotaLab</div>
+                <div class="cf-brand-sub">CARTÃO FIDELIDADE SAÚDE</div>
+              </div>
             </div>
-            <img id="cardPhotoImg" class="card-photo-img" src="" alt="Foto">
-            <div class="card-photo-edit">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <div class="cf-valid-block">
+              <div class="cf-valid-label">VÁLIDO ATÉ</div>
+              <div class="cf-valid-date" id="dcVenc">--/----</div>
             </div>
           </div>
 
-          <!-- Nome e número do titular -->
-          <div class="card-overlay-front">
-            <div class="cof-name" id="dcName">NOME DO TITULAR</div>
-            <div class="cof-num"  id="dcNum">N° 0000001</div>
+          <!-- Slogan central -->
+          <div class="cf-slogan">
+            A NOSSA<br>PREOCUPAÇÃO<br>É A SUA <span>SATISFAÇÃO!</span>
+          </div>
+
+          <!-- Rodapé: foto + nome + número -->
+          <div class="cf-bottom">
+            <div class="card-photo-wrap" id="cardPhotoWrap" onclick="event.stopPropagation(); document.getElementById('photoInput').click()">
+              <div class="card-photo-placeholder" id="cardPhotoPlaceholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              </div>
+              <img id="cardPhotoImg" class="card-photo-img" src="" alt="Foto">
+              <div class="card-photo-edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="9" height="9"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </div>
+            </div>
+            <div class="cf-holder">
+              <div class="cf-star">★</div>
+              <div class="cof-name" id="dcName">NOME DO TITULAR</div>
+              <div class="cof-num"  id="dcNum">Nº 00000000</div>
+            </div>
           </div>
         </div>
 
-        <!-- ── VERSO: imagem real + dados dos participantes (sem QR) ── -->
-        <div class="dc-face dc-back-real">
-          <img src="img/card_verso.png" alt="Verso do Cartão MotaLab" class="card-real-img-back">
-
-          <!-- Participantes — área inferior do verso -->
-          <div class="cob-members" id="cobMembers">
-            <!-- preenchido via JS -->
+        <!-- VERSO — CSS puro -->
+        <div class="dc-face dc-back-css">
+          <div class="cb-bg">
+            <div class="cf-circle cf-c1" style="opacity:0.12;"></div>
+            <div class="cf-circle cf-c3" style="opacity:0.08;"></div>
+          </div>
+          <!-- Tarja magnética -->
+          <div class="cb-stripe"></div>
+          <!-- Cabeçalho verso -->
+          <div class="cb-header">
+            <div class="cb-logo-text">MotaLab <span>Fidelidade</span></div>
+            <div class="cb-tagline">Laboratório e Clínica Médica</div>
+          </div>
+          <!-- Participantes -->
+          <div class="cob-members" id="cobMembers"></div>
+          <!-- Rodapé verso -->
+          <div class="cb-footer">
+            <div class="cb-benefit">🔬 50% exames · 🩺 40% consultas · 💊 Farma Lagos</div>
+            <div class="cb-address">São Sebastião de Lagoa de Roça · Queimadas · Alagoa Nova — PB</div>
           </div>
         </div>
 
@@ -166,7 +236,6 @@
 
     <div class="dc-hint">Toque no cartão para virar · <span onclick="flipCard()">ver o verso</span></div>
 
-    <!-- Botão trocar foto -->
     <div class="add-photo" onclick="document.getElementById('photoInput').click()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="12" cy="12" r="4"/><path d="M9 5V4a1 1 0 011-1h4a1 1 0 011 1v1"/></svg>
       Adicionar / trocar foto no cartão
@@ -245,6 +314,8 @@
       </div>
       <button class="btn-p" onclick="fazerLogin()">Entrar na minha conta →</button>
       <button class="btn-s" onclick="fecharLogin()">Cancelar</button>
+      <div class="login-sep">Esqueceu a senha?</div>
+      <button class="btn-outline-teal" onclick="recuperarSenha()">Recuperar minha senha →</button>
       <div class="login-sep">Não tem conta ainda?</div>
       <button class="btn-outline-teal" onclick="fecharLogin(); abrirCadastro();">Quero me cadastrar →</button>
     </div>
@@ -303,7 +374,7 @@
       <div class="mb-title">Pagamento via Pix</div>
       <div class="mb-desc">Realize o pagamento e seu cartão será ativado <strong>instantaneamente</strong>.</div>
       <div class="pix-val-box"><div class="pix-R"><sup>R$</sup>70<span style="font-size:18px;">,00</span></div><div class="pix-lbl">Adesão Anual · Cartão Fidelidade MotaLab</div></div>
-      <div class="pix-qr-wrap"><div class="pix-qr-title">📱 Escaneie o QR Code Pix</div><div class="pix-qr-img-wrap"><canvas id="pixQrCanvas" width="160" height="160"></canvas></div><p class="pix-qr-hint">Aponte a câmera do seu banco para o QR Code acima ou use a chave abaixo.</p></div>
+      <div class="pix-qr-wrap"><div class="pix-qr-title">📱 Escaneie o QR Code Pix</div><div class="pix-qr-img-wrap"><img id="pixQrImg" width="160" height="160" alt="QR Code Pix" style="display:block;border-radius:6px;"></div><p class="pix-qr-hint">Aponte a câmera do seu banco para o QR Code acima ou use a chave abaixo.</p></div>
       <div class="pix-key-wrap"><div class="pix-key-lbl">🔑 Ou pague pela chave Pix — CNPJ MotaLab</div><div class="pix-key-val">43.909.626/0001-28</div><div class="pix-actions"><button class="copy-btn" onclick="copiarPix()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar chave Pix</button></div></div>
       <div class="pix-instr"><p><strong>Como pagar:</strong><br>1. Escaneie o QR Code <em>ou</em> abra o app do banco → Pix<br>2. Escolha <strong>Pix Copia e Cola</strong> ou <strong>Por Chave</strong><br>3. Cole a chave e confirme o valor de <strong>R$ 70,00</strong><br>4. Clique em <strong>"Já realizei o pagamento"</strong> abaixo</p></div>
       <div class="pix-bar"><div class="pb-dot"></div><div class="pb-txt">Após confirmar no banco, clique abaixo para ativar seu cartão imediatamente.</div></div>
@@ -350,6 +421,7 @@
   </div>
 </div>
 
-<script src="motalab.js"></script>
+<!-- JS como módulo ES para importar Firebase -->
+<script type="module" src="motalab.js"></script>
 </body>
 </html>
