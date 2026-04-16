@@ -77,6 +77,10 @@ import {
   doc,
   setDoc,
   getDoc,
+  getDocs,
+  collection,
+  query,
+  orderBy,
   updateDoc,
   runTransaction,
   serverTimestamp,
@@ -121,6 +125,17 @@ const CONFIG = {
 };
 
 /* ─────────────────────────────────────────────────────
+   CONFIGURAÇÕES DO ADMINISTRADOR
+   ⚠️  ALTERE as credenciais abaixo para as suas!
+   O e-mail deve ser cadastrado no Firebase Authentication
+   e o documento /admins/{uid} deve existir no Firestore.
+   ───────────────────────────────────────────────────── */
+const ADMIN_CONFIG = {
+  EMAIL: 'danielM@motalab.com.br',   // ← troque pelo seu e-mail de admin
+  SENHA: 'mota@2026',             // ← troque pela sua senha de admin
+};
+
+/* ─────────────────────────────────────────────────────
    ESTADO LOCAL
    ───────────────────────────────────────────────────── */
 let userData      = null;   // objeto do usuário autenticado (vindo do Firestore)
@@ -128,6 +143,12 @@ let cardFlipped   = false;
 let tempDeps      = [];     // dependentes temporários durante o cadastro
 let tempCadData   = null;   // dados do Step 1 antes de salvar no Firebase
 let isRegistering = false;  // impede onAuthStateChanged de interferir no cadastro
+
+// Estado do painel admin
+let isAdminMode        = false;
+let allUsersCache      = [];   // cache dos usuários carregados
+let adminSecretClicks  = 0;    // contador de cliques secretos no logo
+let adminSecretTimer   = null;
 
 /* ─────────────────────────────────────────────────────
    OBSERVER DE AUTENTICAÇÃO
@@ -1142,12 +1163,276 @@ function goHome() {
   else { mostrarScreen('landingScreen'); window.scrollTo(0, 0); }
 }
 
-/* ─────────────────────────────────────────────────────
-   EXPORTS GLOBAIS
-   Necessário pois o arquivo usa type="module" —
-   funções chamadas por onclick no HTML precisam estar
-   disponíveis no escopo window.
-   ───────────────────────────────────────────────────── */
+/* ═════════════════════════════════════════════════════════════
+   PAINEL ADMINISTRATIVO
+   ═════════════════════════════════════════════════════════════ */
+
+/**
+ * Gatilho secreto: duplo-clique no logo da navbar abre o login admin.
+ * Não aparece na interface — só quem sabe usa.
+ */
+function adminSecretTrigger() {
+  adminSecretClicks++;
+  clearTimeout(adminSecretTimer);
+  adminSecretTimer = setTimeout(() => { adminSecretClicks = 0; }, 1500);
+
+  if (adminSecretClicks >= 2) {
+    adminSecretClicks = 0;
+    abrirModalAdmin();
+  }
+}
+
+/** Abre o modal de login do administrador */
+function abrirModalAdmin() {
+  document.getElementById('aEmail').value = '';
+  document.getElementById('aSenha').value = '';
+  document.getElementById('aEmail').classList.remove('err');
+  document.getElementById('aSenha').classList.remove('err');
+  document.getElementById('adminErr').style.display = 'none';
+  document.getElementById('modalAdmin').classList.add('open');
+  setTimeout(() => document.getElementById('aEmail').focus(), 350);
+}
+
+function fecharModalAdmin() {
+  document.getElementById('modalAdmin').classList.remove('open');
+}
+
+/**
+ * Faz login como administrador.
+ * Autentica no Firebase e verifica se existe /admins/{uid} no Firestore.
+ */
+async function fazerLoginAdmin() {
+  const emailEl = document.getElementById('aEmail');
+  const senhaEl = document.getElementById('aSenha');
+  const errEl   = document.getElementById('adminErr');
+
+  emailEl.classList.remove('err');
+  senhaEl.classList.remove('err');
+  errEl.style.display = 'none';
+
+  const email = emailEl.value.trim().toLowerCase();
+  const senha = senhaEl.value;
+
+  if (!email) emailEl.classList.add('err');
+  if (!senha) senhaEl.classList.add('err');
+  if (!email || !senha) { showToast('Preencha as credenciais', 'err'); return; }
+
+  showLoading(true, 'Verificando acesso...');
+  fecharModalAdmin();
+
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, senha);
+    const uid  = cred.user.uid;
+
+    // Verifica se o uid existe na coleção /admins
+    const adminSnap = await getDoc(doc(db, 'admins', uid));
+    if (!adminSnap.exists()) {
+      // Não é admin — faz logout e exibe erro
+      await signOut(auth);
+      showLoading(false);
+      abrirModalAdmin();
+      document.getElementById('adminErr').style.display = 'flex';
+      emailEl.classList.add('err');
+      senhaEl.classList.add('err');
+      return;
+    }
+
+    // É admin válido
+    isAdminMode = true;
+    showLoading(false);
+    mostrarScreen('adminScreen');
+    showToast('✅ Acesso admin concedido!', 'ok');
+    carregarUsuariosAdmin();
+
+  } catch (err) {
+    showLoading(false);
+    console.error('[Admin Login] Erro:', err.code);
+    abrirModalAdmin();
+    document.getElementById('adminErr').style.display = 'flex';
+  }
+}
+
+/** Sai do painel admin e volta para a landing */
+async function sairAdmin() {
+  isAdminMode = false;
+  allUsersCache = [];
+  await signOut(auth);
+  userData = null;
+  atualizarNavbar(null);
+  mostrarScreen('landingScreen');
+  showToast('Você saiu do painel admin.', '');
+}
+
+/**
+ * Carrega todos os usuários do Firestore para o painel admin.
+ * Requer que as regras do Firestore permitam leitura de /users
+ * para o UID autenticado que esteja em /admins/{uid}.
+ */
+async function carregarUsuariosAdmin() {
+  const listEl = document.getElementById('adminUserList');
+  listEl.innerHTML = `
+    <div class="admin-empty">
+      <div style="font-size:30px;margin-bottom:8px;">🔄</div>
+      <div>Carregando dados do Firestore...</div>
+    </div>
+  `;
+
+  try {
+    const snap = await getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc')));
+    allUsersCache = snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+    atualizarEstatisticas();
+    renderizarTabelaAdmin(allUsersCache);
+  } catch (err) {
+    console.error('[Admin] Erro ao carregar usuários:', err);
+    listEl.innerHTML = `
+      <div class="admin-empty admin-empty-err">
+        <div style="font-size:30px;margin-bottom:8px;">⚠️</div>
+        <div>Erro ao carregar usuários.<br>
+        Verifique as regras do Firestore e se o documento <strong>/admins/{seu-uid}</strong> existe.</div>
+      </div>
+    `;
+    showToast('Erro ao carregar usuários. Veja o console.', 'err');
+  }
+}
+
+/** Atualiza os cards de estatísticas */
+function atualizarEstatisticas() {
+  const total   = allUsersCache.length;
+  const ativos  = allUsersCache.filter(u => u.status === 'ativo').length;
+  const membros = allUsersCache.reduce((acc, u) => acc + (u.membros?.length || 0), 0);
+  const receita = ativos * 70;
+
+  document.getElementById('statTotal').textContent   = total;
+  document.getElementById('statAtivos').textContent  = ativos;
+  document.getElementById('statMembros').textContent = membros;
+  document.getElementById('statReceita').textContent = `R$ ${receita.toLocaleString('pt-BR')},00`;
+}
+
+/** Filtra e renderiza a tabela de usuários */
+function filtrarUsuarios() {
+  const termo   = (document.getElementById('adminSearch').value || '').toLowerCase();
+  const filtro  = document.getElementById('adminFilter').value;
+
+  let lista = allUsersCache;
+
+  if (filtro !== 'todos') {
+    lista = lista.filter(u => u.status === filtro);
+  }
+
+  if (termo) {
+    lista = lista.filter(u =>
+      (u.nome  || '').toLowerCase().includes(termo) ||
+      (u.cpf   || '').toLowerCase().includes(termo) ||
+      (u.email || '').toLowerCase().includes(termo)
+    );
+  }
+
+  renderizarTabelaAdmin(lista);
+}
+
+/** Renderiza a tabela de usuários no painel admin */
+function renderizarTabelaAdmin(lista) {
+  const listEl = document.getElementById('adminUserList');
+
+  if (!lista.length) {
+    listEl.innerHTML = `
+      <div class="admin-empty">
+        <div style="font-size:30px;margin-bottom:8px;">🔍</div>
+        <div>Nenhum usuário encontrado.</div>
+      </div>
+    `;
+    return;
+  }
+
+  listEl.innerHTML = lista.map(u => {
+    const numFormatado = u.numCartao ? numCard(u.numCartao) : '—';
+    const memTotal     = u.membros?.length || 0;
+    const statusClass  = u.status === 'ativo' ? 'status-ativo' : 'status-inativo';
+    const statusLabel  = u.status === 'ativo' ? '✅ Ativo' : '⏸ Inativo';
+
+    return `
+      <div class="admin-row">
+        <span class="admin-cell admin-cell-num">${numFormatado}</span>
+        <span class="admin-cell admin-cell-nome">
+          <div class="admin-mini-avatar">${iniciais(u.nome || '?')}</div>
+          ${u.nome || '—'}
+        </span>
+        <span class="admin-cell admin-cell-cpf">${u.cpf || '—'}</span>
+        <span class="admin-cell admin-cell-email">${u.email || '—'}</span>
+        <span class="admin-cell">${u.dataVenc || '—'}</span>
+        <span class="admin-cell">
+          <span class="admin-membros-badge">${memTotal} membro${memTotal !== 1 ? 's' : ''}</span>
+        </span>
+        <span class="admin-cell"><span class="admin-status ${statusClass}">${statusLabel}</span></span>
+        <span class="admin-cell">
+          <button class="admin-ver-btn" onclick="verPerfilAdmin('${u.uid}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Ver perfil
+          </button>
+        </span>
+      </div>
+    `;
+  }).join('');
+}
+
+/** Abre o modal de perfil de um usuário específico */
+function verPerfilAdmin(uid) {
+  const u = allUsersCache.find(u => u.uid === uid);
+  if (!u) { showToast('Usuário não encontrado.', 'err'); return; }
+
+  const memHtml = (u.membros?.length)
+    ? u.membros.map(m => `
+        <div class="ap-membro">
+          <div class="ap-membro-av">${iniciais(m.nome || '?')}</div>
+          <div>
+            <div class="ap-membro-nome">${m.nome}</div>
+            <div class="ap-membro-meta">${m.parentesco} · CPF: ${m.cpf}</div>
+          </div>
+        </div>
+      `).join('')
+    : `<p class="ap-sem-membros">Nenhum dependente cadastrado.</p>`;
+
+  const fotoHtml = u.fotoUrl
+    ? `<img src="${u.fotoUrl}" class="ap-foto" alt="Foto do titular">`
+    : `<div class="ap-foto-placeholder">${iniciais(u.nome || '?')}</div>`;
+
+  document.getElementById('adminPerfilContent').innerHTML = `
+    <div class="ap-header">
+      <div class="ap-foto-wrap">${fotoHtml}</div>
+      <div class="ap-header-info">
+        <div class="ap-nome">${u.nome || '—'}</div>
+        <div class="ap-cartao">${u.numCartao ? numCard(u.numCartao) : '—'}</div>
+        <span class="ap-status ${u.status === 'ativo' ? 'status-ativo' : 'status-inativo'}">
+          ${u.status === 'ativo' ? '✅ Cartão Ativo' : '⏸ Inativo'}
+        </span>
+      </div>
+    </div>
+
+    <div class="ap-dados-grid">
+      <div class="ap-dado"><div class="ap-dado-lbl">CPF</div><div class="ap-dado-val">${u.cpf || '—'}</div></div>
+      <div class="ap-dado"><div class="ap-dado-lbl">Data de Nasc.</div><div class="ap-dado-val">${u.nasc ? new Date(u.nasc + 'T12:00:00').toLocaleDateString('pt-BR') : '—'}</div></div>
+      <div class="ap-dado"><div class="ap-dado-lbl">E-mail</div><div class="ap-dado-val">${u.email || '—'}</div></div>
+      <div class="ap-dado"><div class="ap-dado-lbl">Data de Adesão</div><div class="ap-dado-val">${u.dataAdesao || '—'}</div></div>
+      <div class="ap-dado"><div class="ap-dado-lbl">Validade</div><div class="ap-dado-val">${u.dataVenc || '—'}</div></div>
+      <div class="ap-dado"><div class="ap-dado-lbl">UID Firebase</div><div class="ap-dado-val ap-uid">${u.uid}</div></div>
+    </div>
+
+    <div class="mb-title" style="font-size:15px;margin:16px 0 10px;">👨‍👩‍👧‍👦 Participantes do plano (${u.membros?.length || 0}/${CONFIG.MAX_MEMBROS})</div>
+    <div class="ap-membros">${memHtml}</div>
+
+    <button class="btn-s" style="margin-top:20px;" onclick="fecharPerfilAdmin()">← Fechar</button>
+  `;
+
+  document.getElementById('modalAdminPerfil').classList.add('open');
+}
+
+function fecharPerfilAdmin() {
+  document.getElementById('modalAdminPerfil').classList.remove('open');
+}
+
+/* ═════════════════════════════════════════════════════════════
+   EXPORTS GLOBAIS — ADMIN
+   ═════════════════════════════════════════════════════════════ */
 window.goHome             = goHome;
 window.abrirLogin         = abrirLogin;
 window.fecharLogin        = fecharLogin;
@@ -1173,3 +1458,13 @@ window.salvarMembro       = salvarMembro;
 window.removerMembro      = removerMembro;
 window.copiarPix          = copiarPix;
 window.logout             = logout;
+
+// Admin
+window.adminSecretTrigger  = adminSecretTrigger;
+window.fecharModalAdmin    = fecharModalAdmin;
+window.fazerLoginAdmin     = fazerLoginAdmin;
+window.sairAdmin           = sairAdmin;
+window.carregarUsuariosAdmin = carregarUsuariosAdmin;
+window.filtrarUsuarios     = filtrarUsuarios;
+window.verPerfilAdmin      = verPerfilAdmin;
+window.fecharPerfilAdmin   = fecharPerfilAdmin;

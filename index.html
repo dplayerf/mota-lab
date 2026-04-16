@@ -35,7 +35,7 @@
 ══════════════════════════════════════════════ -->
 <nav>
   <div class="nav-inner">
-    <div class="nav-logo" onclick="goHome()">
+    <div class="nav-logo" onclick="goHome()" ondblclick="adminSecretTrigger()" title="MotaLab">
       <img src="img/logo-motalab.png" alt="MotaLab" class="nav-logo-img-real">
     </div>
     <div class="nav-actions" id="navGuest">
@@ -418,6 +418,172 @@
       </div>
       <button class="btn-p" onclick="salvarMembro()">Adicionar ao plano ✓</button>
       <button class="btn-s" onclick="fecharModalMembro()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODAL LOGIN — ADMINISTRADOR
+══════════════════════════════════════════════ -->
+<div class="modal-ov" id="modalAdmin">
+  <div class="modal-box admin-login-box">
+    <div class="mh">
+      <div class="mh-logo"><img src="img/logo-motalab.png" alt="MotaLab" class="modal-logo-img"></div>
+    </div>
+    <div class="mb">
+      <div class="admin-shield">🛡️</div>
+      <div class="mb-title" style="text-align:center;">Acesso Restrito</div>
+      <div class="mb-desc" style="text-align:center;">
+        Área exclusiva para administradores MotaLab.<br>
+        <strong>Insira as credenciais de administrador abaixo.</strong>
+      </div>
+
+      <!-- DICA DE CREDENCIAIS — remova após configurar -->
+      <div class="admin-hint-box">
+        <div class="admin-hint-title">📋 Onde colocar seu usuário e senha</div>
+        <div class="admin-hint-body">
+          No arquivo <code>motalab.js</code>, localize o objeto <code>ADMIN_CONFIG</code>
+          e substitua os valores de <code>email</code> e <code>senha</code> pelos seus.
+          <br><br>
+          <strong>Credencial padrão de exemplo:</strong><br>
+          📧 E-mail: <code>admin@motalab.com.br</code><br>
+          🔑 Senha: <code>admin@2026</code>
+          <br><br>
+          ⚠️ <em>Remova este aviso após configurar suas credenciais reais.</em>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>E-mail do administrador</label>
+        <input type="email" id="aEmail" placeholder="admin@motalab.com.br">
+        <div class="errmsg">E-mail inválido</div>
+      </div>
+      <div class="field">
+        <label>Senha do administrador</label>
+        <input type="password" id="aSenha" placeholder="Sua senha de administrador">
+        <div class="errmsg">Senha inválida</div>
+      </div>
+      <div class="login-err" id="adminErr" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Credenciais inválidas. Acesso negado.
+      </div>
+      <button class="btn-p" onclick="fazerLoginAdmin()">🛡️ Entrar como Administrador</button>
+      <button class="btn-s" onclick="fecharModalAdmin()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TELA 3 — PAINEL DO ADMINISTRADOR
+══════════════════════════════════════════════ -->
+<div class="screen" id="adminScreen">
+  <div class="admin-wrap">
+
+    <!-- Header do Admin -->
+    <div class="admin-header">
+      <div class="admin-header-left">
+        <div class="admin-logo-wrap">
+          <img src="img/logo-motalab.png" alt="MotaLab" class="admin-logo-img">
+        </div>
+        <div>
+          <div class="admin-header-title">Painel Administrativo</div>
+          <div class="admin-header-sub">MotaLab Cartão Fidelidade · Acesso exclusivo</div>
+        </div>
+      </div>
+      <div class="admin-header-right">
+        <div class="admin-badge">🛡️ ADMIN</div>
+        <button class="admin-logout-btn" onclick="sairAdmin()">Sair do painel →</button>
+      </div>
+    </div>
+
+    <!-- Cards de estatísticas -->
+    <div class="admin-stats">
+      <div class="admin-stat-card">
+        <div class="asc-icon">👥</div>
+        <div class="asc-val" id="statTotal">—</div>
+        <div class="asc-lbl">Cartões emitidos</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="asc-icon">✅</div>
+        <div class="asc-val" id="statAtivos">—</div>
+        <div class="asc-lbl">Cartões ativos</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="asc-icon">👨‍👩‍👧‍👦</div>
+        <div class="asc-val" id="statMembros">—</div>
+        <div class="asc-lbl">Participantes</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="asc-icon">💰</div>
+        <div class="asc-val" id="statReceita">—</div>
+        <div class="asc-lbl">Receita estimada</div>
+      </div>
+    </div>
+
+    <!-- Barra de busca e filtros -->
+    <div class="admin-toolbar">
+      <div class="admin-search-wrap">
+        <svg class="admin-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          id="adminSearch"
+          class="admin-search"
+          placeholder="Buscar por nome, CPF ou e-mail..."
+          oninput="filtrarUsuarios()"
+        >
+      </div>
+      <div class="admin-filter-wrap">
+        <select id="adminFilter" class="admin-filter" onchange="filtrarUsuarios()">
+          <option value="todos">Todos os cartões</option>
+          <option value="ativo">Apenas ativos</option>
+          <option value="inativo">Apenas inativos</option>
+        </select>
+        <button class="admin-refresh-btn" onclick="carregarUsuariosAdmin()" title="Recarregar lista">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          Atualizar
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabela / lista de usuários -->
+    <div class="admin-table-wrap">
+      <div class="admin-table-header">
+        <span>Nº Cartão</span>
+        <span>Titular</span>
+        <span>CPF</span>
+        <span>E-mail</span>
+        <span>Vencimento</span>
+        <span>Membros</span>
+        <span>Status</span>
+        <span>Ações</span>
+      </div>
+      <div id="adminUserList">
+        <div class="admin-empty">
+          <div style="font-size:36px;margin-bottom:10px;">🔄</div>
+          <div>Carregando usuários...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODAL — PERFIL DO USUÁRIO (Admin View)
+══════════════════════════════════════════════ -->
+<div class="modal-ov" id="modalAdminPerfil">
+  <div class="modal-box admin-perfil-box">
+    <div class="mh">
+      <div class="mh-logo"><img src="img/logo-motalab.png" alt="MotaLab" class="modal-logo-img"></div>
+      <div class="admin-perfil-badge">🛡️ Visualização Admin</div>
+    </div>
+    <div class="mb" id="adminPerfilContent">
+      <!-- preenchido via JS -->
     </div>
   </div>
 </div>
