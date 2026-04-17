@@ -1,48 +1,29 @@
 // =====================================================================
-// MOTALAB — REGRAS DE SEGURANÇA DO FIREBASE
-// Cole cada bloco no Console do Firebase → aba "Rules"
+// MOTALAB — REGRAS DE SEGURANÇA
+// Cole cada bloco no Console Firebase → aba "Rules"
 // =====================================================================
 
-
-// ─────────────────────────────────────────────────────────────────────
-// FIRESTORE DATABASE RULES
-// Console: https://console.firebase.google.com
-// Projeto: mota-lab-e10e0
+// ── FIRESTORE ──
 // Menu: Firestore Database → Rules
 // ─────────────────────────────────────────────────────────────────────
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Usuários ──────────────────────────────────────────────────────
-    // Cada usuário só pode ler e escrever o próprio documento.
-    // Nenhum usuário pode acessar dados de outro.
+    // Cada usuário só lê/escreve o próprio documento
     match /users/{userId} {
       allow read, write: if request.auth != null
                          && request.auth.uid == userId;
     }
 
-    // ── Contador de cartões ──────────────────────────────────────────
-    // Qualquer usuário autenticado pode ler e incrementar o contador.
-    // A lógica de incremento atômico (runTransaction) garante
-    // que dois usuários nunca recebam o mesmo número de cartão.
-    match /counters/{counterId} {
-      allow read:  if request.auth != null;
-      allow write: if request.auth != null;
-    }
-
-    // Reserva de códigos únicos de cartão
-    // create: qualquer usuário autenticado pode criar (reservar um código)
-    // update/delete: bloqueado — código reservado é permanente
+    // Reserva de códigos únicos — só create, nunca delete
     match /codes/{codeId} {
       allow read:   if request.auth != null;
       allow create: if request.auth != null;
       allow update, delete: if false;
     }
 
-    // ── Bloqueio geral ────────────────────────────────────────────────
-    // Qualquer rota não explicitamente permitida acima é negada.
+    // Bloqueio geral
     match /{document=**} {
       allow read, write: if false;
     }
@@ -50,67 +31,21 @@ service cloud.firestore {
 }
 
 
-// ─────────────────────────────────────────────────────────────────────
-// FIREBASE STORAGE RULES
-// Console: https://console.firebase.google.com
-// Projeto: mota-lab-e10e0
+// ── STORAGE ──
 // Menu: Storage → Rules
 // ─────────────────────────────────────────────────────────────────────
-
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-
-    // ── Fotos dos titulares ───────────────────────────────────────────
-    // Cada usuário pode:
-    //   - Ler apenas a própria foto
-    //   - Fazer upload apenas da própria foto
-    //   - Tamanho máximo: 5MB
-    //   - Tipo permitido: somente imagens
     match /photos/{userId} {
-      allow read:  if request.auth != null
-                   && request.auth.uid == userId;
+      allow read:  if request.auth != null && request.auth.uid == userId;
       allow write: if request.auth != null
                    && request.auth.uid == userId
                    && request.resource.size < 5 * 1024 * 1024
                    && request.resource.contentType.matches('image/.*');
     }
-
-    // ── Bloqueio geral ────────────────────────────────────────────────
     match /{allPaths=**} {
       allow read, write: if false;
     }
   }
 }
-
-
-// ─────────────────────────────────────────────────────────────────────
-// ESTRUTURA DO FIRESTORE (referência)
-// ─────────────────────────────────────────────────────────────────────
-//
-// /users/{uid}
-//   uid          : string    (= Firebase Auth UID)
-//   nome         : string
-//   cpf          : string    (ex: "012.345.678-90")
-//   nasc         : string    (ex: "1990-05-20")
-//   email        : string
-//   numCartao    : number    (ex: 1, 2, 3 ... sequencial)
-//   dataAdesao   : string    (ex: "14/04/2026")
-//   dataVenc     : string    (ex: "14/04/2027")
-//   status       : string    ("ativo" | "inativo")
-//   membros      : array
-//     - nome       : string
-//     - cpf        : string
-//     - parentesco : string
-//   fotoUrl      : string | null
-//   createdAt    : Timestamp
-//   updatedAt    : Timestamp
-//
-// /counters/global
-//   proximoCartao : number   (inicializado automaticamente em 1)
-//
-// ─────────────────────────────────────────────────────────────────────
-// AUTENTICAÇÃO
-// Console: Authentication → Sign-in method
-// Habilitar: "Email/Password"
-// ─────────────────────────────────────────────────────────────────────
