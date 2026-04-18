@@ -16,10 +16,11 @@
 <!-- Modal Confirmação -->
 <div class="modal-ov" id="modalConfirm">
   <div class="modal-box confirm-box">
+    <div class="confirm-icon" id="confirmIcon">⚠️</div>
     <div class="confirm-msg" id="confirmMsg">Tem certeza?</div>
     <div class="confirm-actions">
-      <button class="btn-confirm-sim" id="confirmSim">Confirmar</button>
       <button class="btn-confirm-nao" id="confirmNao">Cancelar</button>
+      <button class="btn-confirm-sim" id="confirmSim">Confirmar</button>
     </div>
   </div>
 </div>
@@ -79,8 +80,8 @@
     </div>
 
     <div class="compare-grid">
-      <div class="cg yes"><h4>✅ Com o Cartão MotaLab</h4><ul><li>✓ Exames com até 50% de desconto</li><li>✓ Consultas especializadas acessíveis</li><li>✓ Clínico Geral por R$ 49,90</li><li>✓ Descontos em farmácias</li><li>✓ Toda a família incluída</li><li>✓ Apenas R$ 70,00 por ano</li></ul></div>
-      <div class="cg no"><h4>❌ Sem o cartão</h4><ul><li>✗ Exames pelo preço cheio</li><li>✗ Consultas a R$ 200–400+</li><li>✗ Sem benefício em farmácias</li><li>✗ Cada familiar paga separado</li><li>✗ Gastos imprevisíveis</li><li>✗ Sem suporte especializado</li><li>✗ Sem prioridade no atendimento</li></ul></div>
+      <div class="cg yes"><h4><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><defs><mask id="SVGnjJ3Vd6Z"><g stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="#fff" fill-opacity="0" stroke="#fff" stroke-dasharray="66" d="M4 12v-7c0 -0.55 0.45 -1 1 -1h14c0.55 0 1 0.45 1 1v14c0 0.55 -0.45 1 -1 1h-14c-0.55 0 -1 -0.45 -1 -1Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="66;0"/><animate fill="freeze" attributeName="fill-opacity" begin="0.6s" dur="0.4s" to="1"/></path><path fill="none" stroke="#000" stroke-dasharray="14" stroke-dashoffset="14" d="M8 12l3 3l5 -5"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1.1s" dur="0.2s" to="0"/></path></g></mask></defs><path fill="#0affa0" d="M0 0h24v24H0z" mask="url(#SVGnjJ3Vd6Z)"/></svg> Com o Cartão MotaLab</h4><ul><li>✓ Exames com até 50% de desconto</li><li>✓ Consultas especializadas acessíveis</li><li>✓ Clínico Geral por R$ 49,90</li><li>✓ Descontos em farmácias</li><li>✓ Toda a família incluída</li><li>✓ Apenas R$ 70,00 por ano</li></ul></div>
+      <div class="cg no"><h4>❌ Sem o cartão</h4><ul><li>✗ Exames pelo preço cheio</li><li>✗ Consultas a R$ 200–400+</li><li>✗ Sem benefício em farmácias</li><li>✗ Cada familiar paga separado</li><li>✗ Gastos imprevisíveis</li></ul></div>
     </div>
 
     <div class="stag" style="margin-top:48px;">Condições do plano</div>
@@ -221,8 +222,11 @@
     <div class="modal-body">
       <div class="modal-title">Entrar na minha conta</div>
       <div class="modal-desc">Informe seu e-mail e senha para acessar seu cartão.</div>
-      <div class="field"><label>E-mail</label><input type="email" id="lEmail" placeholder="seu@email.com.br" autocomplete="email"><div class="errmsg">E-mail inválido</div></div>
-      <div class="field"><label>Senha</label><div class="pw-wrap"><input type="password" id="lSenha" placeholder="Sua senha" autocomplete="current-password"><button type="button" class="pw-toggle" onclick="togglePw('lSenha',this)">👁</button></div><div class="errmsg">Senha incorreta</div></div>
+      <div class="field"><label>E-mail</label><input type="email" id="lEmail" placeholder="Digite seu e-mail" autocomplete="email"><div class="errmsg">E-mail inválido</div></div>
+      <div class="field"><label>Senha</label><div class="pw-wrap"><input type="password" id="lSenha" placeholder="Sua senha" autocomplete="current-password"><button type="button" class="pw-toggle" onclick="togglePw('lSenha',this)" aria-label="Mostrar senha">
+  <svg class="eye-icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+  <svg class="eye-icon eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+</button></div><div class="errmsg">Senha incorreta</div></div>
       <div class="login-err" id="loginErr" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>E-mail ou senha incorretos.</div>
       <button class="btn-primary" onclick="fazerLogin()">Entrar na minha conta</button>
       <button class="btn-secondary" onclick="fecharLogin()">Cancelar</button>
@@ -258,8 +262,14 @@
       <div class="field"><label>E-mail</label><input type="email" id="iEmail" placeholder="seu@email.com.br" autocomplete="email"><div class="errmsg">E-mail inválido</div></div>
       <div class="field"><label>Telefone</label><input type="tel" id="iTel" placeholder="(83) 99999-9999" maxlength="15"><div class="errmsg">Informe o telefone</div></div>
       <div class="row2">
-        <div class="field"><label>Senha</label><div class="pw-wrap"><input type="password" id="iSenha" placeholder="Mínimo 6 caracteres" autocomplete="new-password"><button type="button" class="pw-toggle" onclick="togglePw('iSenha',this)">👁</button></div><div class="errmsg">Mínimo 6 caracteres</div></div>
-        <div class="field"><label>Confirmar senha</label><div class="pw-wrap"><input type="password" id="iConf" placeholder="Repita a senha" autocomplete="new-password"><button type="button" class="pw-toggle" onclick="togglePw('iConf',this)">👁</button></div><div class="errmsg">Senhas diferentes</div></div>
+        <div class="field"><label>Senha</label><div class="pw-wrap"><input type="password" id="iSenha" placeholder="Mínimo 6 caracteres" autocomplete="new-password"><button type="button" class="pw-toggle" onclick="togglePw('iSenha',this)" aria-label="Mostrar senha">
+  <svg class="eye-icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+  <svg class="eye-icon eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+</button></div><div class="errmsg">Mínimo 6 caracteres</div></div>
+        <div class="field"><label>Confirmar senha</label><div class="pw-wrap"><input type="password" id="iConf" placeholder="Repita a senha" autocomplete="new-password"><button type="button" class="pw-toggle" onclick="togglePw('iConf',this)" aria-label="Mostrar senha">
+  <svg class="eye-icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+  <svg class="eye-icon eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+</button></div><div class="errmsg">Senhas diferentes</div></div>
       </div>
       <button class="btn-primary" onclick="goToDeps()">Continuar</button>
       <button class="btn-secondary" onclick="fecharModal()">Cancelar</button>

@@ -171,7 +171,10 @@ window.togglePw = (id, btn) => {
   if (!el) return;
   const isText = el.type === 'text';
   el.type = isText ? 'password' : 'text';
-  btn.textContent = isText ? '👁' : '🙈';
+  const open   = btn.querySelector('.eye-open');
+  const closed = btn.querySelector('.eye-closed');
+  if (open)   open.style.display   = isText ? '' : 'none';
+  if (closed) closed.style.display = isText ? 'none' : '';
 };
 
 /** Modal de confirmação assíncrona */
@@ -179,10 +182,28 @@ function confirmarAcao(msg, tipo = 'danger') {
   return new Promise(resolve => {
     const ov  = document.getElementById('modalConfirm');
     const box = ov.querySelector('.confirm-box');
-    document.getElementById('confirmMsg').textContent  = msg;
-    document.getElementById('confirmIcon').textContent = tipo === 'logout' ? '🚪' : '⚠️';
+    document.getElementById('confirmMsg').textContent = msg;
+
+    // Ícone SVG em vez de emoji
+    const iconEl = document.getElementById('confirmIcon');
+    if (tipo === 'logout') {
+      iconEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="26" height="26" style="color:var(--teal-dark)"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`;
+    } else {
+      iconEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="26" height="26" style="color:var(--red)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>`;
+    }
+
+    // Subtítulo contextual
+    let subEl = box.querySelector('.confirm-sub');
+    if (!subEl) { subEl = document.createElement('p'); subEl.className = 'confirm-sub'; document.getElementById('confirmMsg').after(subEl); }
+    subEl.textContent = tipo === 'logout' ? 'Você será desconectado da sua conta.' : 'Esta ação não pode ser desfeita.';
+
+    // Texto dos botões
+    document.getElementById('confirmSim').textContent = tipo === 'logout' ? 'Sair da conta' : 'Confirmar';
+    document.getElementById('confirmNao').textContent = 'Cancelar';
+
     box.classList.toggle('logout', tipo === 'logout');
     ov.classList.add('open');
+
     const sim = document.getElementById('confirmSim');
     const nao = document.getElementById('confirmNao');
     const res = (v) => { ov.classList.remove('open'); sim.removeEventListener('click', hs); nao.removeEventListener('click', hn); resolve(v); };

@@ -233,8 +233,16 @@ footer a { color:var(--teal-light); text-decoration:none; }
 
 /* Mostrar/ocultar senha */
 .pw-wrap { position:relative; }
-.pw-wrap input { padding-right:40px; }
-.pw-toggle { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:15px; opacity:0.5; transition:.2s; padding:4px; }
+.pw-wrap input { padding-right:44px; }
+.pw-toggle {
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  background:none; border:none; cursor:pointer;
+  color:var(--gray); opacity:0.55; transition:.2s;
+  padding:4px; display:flex; align-items:center; justify-content:center;
+  line-height:0;
+}
+.pw-toggle:hover { opacity:1; color:var(--teal-deep); }
+.eye-icon { display:block; pointer-events:none; }
 .pw-toggle:hover { opacity:1; }
 
 .row2 { display:grid; grid-template-columns:1fr 1fr; gap:11px; }
@@ -300,14 +308,31 @@ footer a { color:var(--teal-light); text-decoration:none; }
 .pn-dot { width:10px; height:10px; border-radius:50%; background:var(--teal); flex-shrink:0; animation:pulse 1.5s infinite; }
 
 /* Modal confirmação */
-.confirm-box { max-width:340px !important; padding:32px 28px; text-align:center; overflow:visible !important; }
-.confirm-icon { font-size:36px; margin-bottom:12px; }
-.confirm-msg { font-family:'Montserrat',sans-serif; font-size:16px; font-weight:700; color:var(--navy); line-height:1.4; margin-bottom:24px; }
+.confirm-box {
+  max-width:340px !important; padding:32px 28px 28px;
+  text-align:center; overflow:visible !important;
+  animation:popIn .28s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn { from{transform:scale(.88);opacity:0} to{transform:scale(1);opacity:1} }
+
+.confirm-icon {
+  width:56px; height:56px; border-radius:50%;
+  background:rgba(239,68,68,0.1); border:2px solid rgba(239,68,68,0.2);
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 14px; font-size:24px; transition:.2s;
+}
+.confirm-box.logout .confirm-icon {
+  background:rgba(30,143,138,0.1); border-color:rgba(30,143,138,0.25);
+}
+.confirm-msg { font-family:'Montserrat',sans-serif; font-size:16px; font-weight:700; color:var(--navy); line-height:1.4; margin-bottom:8px; }
+.confirm-sub { font-size:12px; color:var(--gray); margin-bottom:24px; }
 .confirm-actions { display:flex; gap:10px; }
-.btn-confirm-sim { flex:1; padding:12px; background:linear-gradient(135deg,var(--red),#DC2626); color:white; border:none; border-radius:11px; font-size:14px; font-weight:700; font-family:'Montserrat',sans-serif; cursor:pointer; transition:.2s; }
-.btn-confirm-sim:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(239,68,68,0.4); }
 .btn-confirm-nao { flex:1; padding:12px; background:var(--gray-lt); color:var(--navy); border:none; border-radius:11px; font-size:14px; font-weight:600; font-family:'Montserrat',sans-serif; cursor:pointer; transition:.2s; }
 .btn-confirm-nao:hover { background:#E5E7EB; }
+.btn-confirm-sim { flex:1; padding:12px; background:linear-gradient(135deg,var(--red),#DC2626); color:white; border:none; border-radius:11px; font-size:14px; font-weight:700; font-family:'Montserrat',sans-serif; cursor:pointer; transition:.2s; }
+.btn-confirm-sim:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(239,68,68,0.4); }
+.confirm-box.logout .btn-confirm-sim { background:linear-gradient(135deg,var(--teal-dark),var(--teal-deep)); }
+.confirm-box.logout .btn-confirm-sim:hover { box-shadow:0 6px 18px rgba(30,143,138,0.4); }
 
 /* =====================================================
    HOME — TELA DO USUÁRIO
