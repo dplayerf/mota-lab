@@ -355,9 +355,9 @@ footer a { color:var(--teal-light); text-decoration:none; }
 .fc-venc-overlay {
   position:absolute; top:6%; right:5%;
   z-index:3; text-align:right;
-  filter:drop-shadow(0 1px 4px rgba(0,0,0,0.6));
+  filter:drop-shadow(0 1px 4px rgba(6, 6, 6, 0.6));
 }
-.fc-vl { font-size:clamp(4px,1.1vw,7px); font-weight:700; color:rgba(255,255,255,0.65); letter-spacing:1px; text-transform:uppercase; }
+.fc-vl { font-size:clamp(4px,1.1vw,7px); font-weight:700; color:rgba(3, 3, 3, 0.65); letter-spacing:1px; text-transform:uppercase; }
 .fc-vd { font-family:'Montserrat',sans-serif; font-size:clamp(8px,2.2vw,13px); font-weight:800; color:white; letter-spacing:0.5px; text-shadow:0 1px 6px rgba(0,0,0,0.5); }
 
 /* Rodapé com foto + nome */
@@ -507,4 +507,8 @@ footer a { color:var(--teal-light); text-decoration:none; }
   .row2 { grid-template-columns:1fr; }
   .pix-actions { flex-direction:column; }
   .copy-btn { width:100%; justify-content:center; }
+}
+
+.container {
+  text-align: center;
 }
