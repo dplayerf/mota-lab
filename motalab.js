@@ -78,7 +78,6 @@ onAuthStateChanged(auth, async (user) => {
         atualizarNavbar(userData);
         preencherHome();
         mostrarTela('homeScreen');
-        setTimeout(restaurarFoto, 200);
         showToast(`Bem-vindo(a), ${primeiroNome(userData.nome)}! 👋`, 'ok');
       } else {
         await signOut(auth);
@@ -400,7 +399,7 @@ function renderizarDepList() {
       <div class="dep-item-av">${iniciais(d.nome)}</div>
       <div class="dep-item-info">
         <div class="dep-item-name">${d.nome}</div>
-        <div class="dep-item-meta">${d.parentesco} · CPF: ${d.cpf}</div>
+        <div class="dep-item-meta">${d.parentesco} · Nasc: ${d.nasc ? formatarDataNasc(d.nasc) : '—'}</div>
       </div>
       <button class="dep-item-rm" onclick="removerDep(${idx})">×</button>`;
     list.appendChild(item);
@@ -419,7 +418,7 @@ function adicionarDepForm() {
   form.innerHTML = `
     <div class="row2" style="margin-bottom:8px;">
       <div class="field" style="margin-bottom:0;"><label>Nome completo</label><input type="text" id="dfNome" placeholder="Nome do participante"><div class="errmsg">Informe o nome</div></div>
-      <div class="field" style="margin-bottom:0;"><label>CPF</label><input type="text" id="dfCpf" placeholder="000.000.000-00" maxlength="14"><div class="errmsg">CPF inválido</div></div>
+      <div class="field" style="margin-bottom:0;"><label>Nascimento</label><input type="date" id="dfNasc"><div class="errmsg">Informe a data</div></div>
     </div>
     <div class="field" style="margin-bottom:8px;"><label>Parentesco</label>
       <select id="dfParentesco" class="field-select">
@@ -433,21 +432,20 @@ function adicionarDepForm() {
       <button class="dep-form-cancel" onclick="cancelarDepForm()">Cancelar</button>
     </div>`;
   list.appendChild(form);
-  mascaraCPF(document.getElementById('dfCpf'));
   document.getElementById('dfNome').focus();
 }
 window.adicionarDepForm = adicionarDepForm;
 
 function confirmarDepForm() {
   const nEl = document.getElementById('dfNome');
-  const cEl = document.getElementById('dfCpf');
-  if (!nEl || !cEl) return;
+  const dEl = document.getElementById('dfNasc');
+  if (!nEl || !dEl) return;
   let ok = true;
-  const nome = nEl.value.trim(), cpf = cEl.value;
+  const nome = nEl.value.trim(), nasc = dEl.value;
   nome.split(' ').filter(Boolean).length >= 2 ? nEl.classList.remove('err') : (nEl.classList.add('err'), ok=false);
-  validCPF(cpf) ? cEl.classList.remove('err') : (cEl.classList.add('err'), ok=false);
+  nasc ? dEl.classList.remove('err') : (dEl.classList.add('err'), ok=false);
   if (!ok) { showToast('Verifique os campos', 'err'); return; }
-  tempDeps.push({ nome, cpf, parentesco: document.getElementById('dfParentesco').value });
+  tempDeps.push({ nome, nasc, parentesco: document.getElementById('dfParentesco').value });
   cancelarDepForm();
   renderizarDepList();
   showToast(`${primeiroNome(nome)} adicionado(a)!`, 'ok');
@@ -630,7 +628,7 @@ function renderizarMembrosPanel() {
           <div class="mp-av">${iniciais(m.nome)}</div>
           <div class="mp-info">
             <div class="mp-name">${m.nome}</div>
-            <div class="mp-meta">${m.parentesco} · CPF: ${m.cpf}</div>
+            <div class="mp-meta">${m.parentesco} · Nasc: ${m.nasc ? formatarDataNasc(m.nasc) : (m.cpf ? 'CPF: '+m.cpf : '—')}</div>
           </div>
           <button class="mp-rm" onclick="removerMembro(${idx})">×</button>
         </div>`;
@@ -641,7 +639,7 @@ function renderizarMembrosPanel() {
 
 function abrirAddMembro() {
   if ((userData?.membros || []).length >= CFG.MAX_MBR) { showToast(`Limite de ${CFG.MAX_MBR} participantes`, 'err'); return; }
-  ['mNome','mCpf'].forEach(id => { const e=document.getElementById(id); if(e){e.value='';e.classList.remove('err');} });
+  ['mNome','mNasc'].forEach(id => { const e=document.getElementById(id); if(e){e.value='';e.classList.remove('err');} });
   document.getElementById('mParentesco').selectedIndex = 0;
   document.getElementById('modalMembro').classList.add('open');
 }
@@ -652,14 +650,14 @@ window.fecharModalMembro = fecharModalMembro;
 
 async function salvarMembro() {
   const nEl = document.getElementById('mNome');
-  const cEl = document.getElementById('mCpf');
+  const dEl = document.getElementById('mNasc');
   let ok = true;
-  const nome = nEl.value.trim(), cpf = cEl.value;
+  const nome = nEl.value.trim(), nasc = dEl.value;
   nome.split(' ').filter(Boolean).length >= 2 ? nEl.classList.remove('err') : (nEl.classList.add('err'), ok=false);
-  validCPF(cpf) ? cEl.classList.remove('err') : (cEl.classList.add('err'), ok=false);
+  nasc ? dEl.classList.remove('err') : (dEl.classList.add('err'), ok=false);
   if (!ok) { showToast('Verifique os campos', 'err'); return; }
   if (!userData.membros) userData.membros = [];
-  const novo = { nome, cpf, parentesco: document.getElementById('mParentesco').value };
+  const novo = { nome, nasc, parentesco: document.getElementById('mParentesco').value };
   userData.membros.push(novo);
   showLoading(true, 'Salvando participante...');
   try {
@@ -700,45 +698,6 @@ async function removerMembro(idx) {
   }
 }
 window.removerMembro = removerMembro;
-
-/* ================================================================
-   FOTO DO CARTÃO — Firebase Storage
-   ================================================================ */
-async function loadPhoto(input) {
-  if (!input.files?.[0]) return;
-  const file = input.files[0];
-  if (file.size > CFG.MAX_FOTO * 1024 * 1024) { showToast(`Imagem muito grande. Máximo ${CFG.MAX_FOTO}MB.`, 'err'); return; }
-  if (!file.type.startsWith('image/')) { showToast('Selecione uma imagem válida.', 'err'); return; }
-  showLoading(true, 'Enviando foto...');
-  try {
-    const uid  = auth.currentUser.uid;
-    const ref  = sRef(storage, `photos/${uid}`);
-    await uploadBytes(ref, file);
-    const url  = await getDownloadURL(ref);
-    await updateDoc(doc(db, 'users', uid), { fotoUrl: url, updatedAt: serverTimestamp() });
-    userData.fotoUrl = url;
-    aplicarFoto(url);
-    showToast('Foto adicionada ao cartão!', 'ok');
-  } catch (e) {
-    console.error('[loadPhoto]', e);
-    showToast('Erro ao enviar foto. Tente novamente.', 'err');
-  } finally {
-    showLoading(false);
-    input.value = '';
-  }
-}
-window.loadPhoto = loadPhoto;
-
-function aplicarFoto(url) {
-  const img = document.getElementById('cardPhotoImg');
-  const ph  = document.getElementById('cardPhotoPlaceholder');
-  if (!img || !url) return;
-  img.src = url;
-  img.classList.add('visible');
-  if (ph) ph.style.display = 'none';
-}
-
-function restaurarFoto() { if (userData?.fotoUrl) aplicarFoto(userData.fotoUrl); }
 
 /* ================================================================
    PIX — PAYLOAD EMV + QR
@@ -811,8 +770,6 @@ async function logout() {
   await signOut(auth);
   userData = null; cardFlipped = false;
   document.getElementById('dcInner')?.classList.remove('flipped');
-  const img=document.getElementById('cardPhotoImg'); const ph=document.getElementById('cardPhotoPlaceholder');
-  if (img){img.src='';img.classList.remove('visible');} if(ph)ph.style.display='flex';
   atualizarNavbar(null);
   mostrarTela('landingScreen');
   showToast('Você saiu da conta.', '');
