@@ -381,25 +381,25 @@ footer a { color:var(--teal-light); text-decoration:none; }
 .fb-bg { position:absolute; inset:0; pointer-events:none; }
 .fb-stripe { position:absolute; top:14%; left:0; right:0; height:11%; background:rgba(69, 67, 67, 0.5); }
 .fb-header { position:absolute; top:3%; left:0; right:0; padding:0 5%; display:flex; align-items:center; justify-content:space-between; z-index:2; }
-.fb-logo { font-family:'Montserrat',sans-serif; font-size:clamp(8px,2.5vw,14px); font-weight:900; color:white; }
-.fb-logo span { color:var(--teal-light); }
-.fb-logo em { font-style:normal; color:rgba(255,255,255,0.65); font-size:0.85em; }
-.fb-sub { font-size:clamp(4px,1.1vw,7px); color:rgba(255,255,255,0.5); font-weight:600; text-transform:uppercase; letter-spacing:0.8px; }
+.fb-logo { font-family:'Montserrat',sans-serif; font-size:clamp(8px,2.5vw,14px); font-weight:900; color:rgb(5, 83, 81); }
+.fb-logo span { color:rgba(236, 255, 255, 0.753); }
+.fb-logo em { font-style:normal; color:rgba(236, 255, 255, 0.753); font-size:0.85em; }
+.fb-sub { font-size:clamp(4px,1.1vw,7px); color:rgb(255, 255, 255); font-weight:600; text-transform:uppercase; letter-spacing:0.8px; }
 
 /* Dados pessoais no verso — tamanho maior, mais legível */
 .fb-data { position:absolute; top:27%; left:0; right:0; padding:0 6%; z-index:2; }
-.fb-row { display:flex; align-items:center; gap:8px; margin-bottom:clamp(3px,1vw,7px); border-bottom:1px solid rgba(255,255,255,0.07); padding-bottom:clamp(2px,0.7vw,5px); }
+.fb-row { display:flex; align-items:center; gap:8px; margin-bottom:clamp(3px,1vw,7px); border-bottom:1px solid rgba(0, 255, 195, 0.948); padding-bottom:clamp(2px,0.7vw,5px); }
 .fb-row:last-child { border-bottom:none; }
 .fb-lbl {
   font-size:clamp(5px,1.3vw,8px); font-weight:800;
-  color:rgba(255,255,255,0.45); text-transform:uppercase;
+  color:rgba(0, 0, 0, 0.45); text-transform:uppercase;
   letter-spacing:0.8px; white-space:nowrap;
   min-width:clamp(42px,11vw,68px);
 }
 .fb-val {
   font-family:'Montserrat',sans-serif;
   font-size:clamp(6px,1.9vw,11px); font-weight:700;
-  color:white; text-shadow:0 1px 4px rgba(0,0,0,0.5);
+  color:white; text-shadow:0 1px 4px rgba(255, 255, 255, 0.39);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;
 }
 .fb-num { color:var(--teal-light); letter-spacing:2px; font-size:clamp(7px,2vw,12px); }
@@ -408,7 +408,7 @@ footer a { color:var(--teal-light); text-decoration:none; }
 .fb-members-label {
   position:absolute; top:57%; left:6%; right:6%;
   font-size:clamp(5px,1.2vw,7px); font-weight:800;
-  color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px; z-index:2;
+  color:rgb(255, 255, 255); text-transform:uppercase; letter-spacing:1px; z-index:2;
 }
 .fb-members {
   position:absolute; top:61%; left:0; right:0; bottom:0;
