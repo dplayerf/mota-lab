@@ -26,7 +26,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
 import {
   getFirestore, doc, setDoc, getDoc, updateDoc,
-  runTransaction, serverTimestamp,
+  runTransaction, serverTimestamp, onSnapshot,
 } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
 import {
   getStorage, ref as sRef, uploadBytes, getDownloadURL,
@@ -47,13 +47,14 @@ const storage = getStorage(app);
 
 /* ── Config ── */
 const CFG = {
-  CHAVE_PIX: '43.909.626/0001-28',
-  NOME_PIX:  'MotaLab Saude',
-  CIDADE_PIX:'Lagoa de Roca',
-  VALOR_PIX: '70.00',
-  DESC_PIX:  'Adesao Fidelidade',
-  MAX_MBR:   5,
-  MAX_FOTO:  5,
+  CHAVE_PIX:  '83988695500',
+  NOME_PIX:   'MotaLab Saude',
+  CIDADE_PIX: 'Lagoa de Roca',
+  VALOR_PIX:  '70.00',
+  DESC_PIX:   'Adesao Fidelidade',
+  MAX_MBR:    5,
+  MAX_FOTO:   5,
+  WPP_NUM:    '5583988695500',
 };
 
 /* ── Estado ── */
@@ -62,35 +63,63 @@ let cardFlipped   = false;
 let tempDeps      = [];
 let tempCadData   = null;
 let isRegistering = false;
+let unsubUserDoc  = null; // listener tempo real — cancelado no logout
 
 /* ================================================================
    AUTH OBSERVER — ponto central de sessão
    ================================================================ */
-onAuthStateChanged(auth, async (user) => {
-  if (isRegistering) return; // cadastro em andamento, não interferir
+onAuthStateChanged(auth, (user) => {
+  if (isRegistering) return;
+
+  // Cancela listener anterior
+  if (unsubUserDoc) { unsubUserDoc(); unsubUserDoc = null; }
 
   if (user) {
     showLoading(true, 'Carregando seu cartão...');
-    try {
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      if (snap.exists() && snap.data().status === 'ativo') {
-        userData = { uid: user.uid, ...snap.data() };
-        atualizarNavbar(userData);
-        preencherHome();
-        mostrarTela('homeScreen');
-        showToast(`Bem-vindo(a), ${primeiroNome(userData.nome)}! 👋`, 'ok');
-      } else {
-        await signOut(auth);
-        mostrarTela('landingScreen');
+
+    // onSnapshot: escuta em tempo real — quando admin ativar, cliente vê na hora
+    unsubUserDoc = onSnapshot(
+      doc(db, 'users', user.uid),
+      (snap) => {
+        showLoading(false);
+        if (!snap.exists()) { signOut(auth); return; }
+
+        const d = snap.data();
+        // DEBUG — remover após resolver
+        console.log('[DEBUG] status:', d.status, '| nome:', d.nome, '| uid:', user.uid);
+        userData = { uid: user.uid, ...d };
+
+        if (d.status === 'ativo') {
+          const telaAtual = document.querySelector('.screen.active')?.id;
+          // Navega PRIMEIRO para garantir que a tela muda mesmo se preencherHome falhar
+          mostrarTela('homeScreen');
+          try {
+            atualizarNavbar(userData);
+            preencherHome();
+          } catch(e) {
+            console.error('[preencherHome]', e);
+          }
+          if (telaAtual === 'pendingScreen') {
+            showToast('🎉 Cartão ativado! Bem-vindo(a), ' + primeiroNome(d.nome) + '!', 'ok');
+          } else {
+            showToast('Bem-vindo(a), ' + primeiroNome(d.nome) + '! 👋', 'ok');
+          }
+        } else if (d.status === 'pendente') {
+          mostrarTelaPendente(d);
+        } else {
+          // inativo
+          signOut(auth).then(() => {
+            mostrarTela('landingScreen');
+            showToast('Sua conta está inativa. Entre em contato com o MotaLab.', 'err');
+          });
+        }
+      },
+      (e) => {
+        showLoading(false);
+        console.error('[Listener]', e);
+        showToast('Erro ao carregar dados. Verifique sua conexão.', 'err');
       }
-    } catch (e) {
-      console.error('[Observer]', e);
-      showToast('Erro ao carregar dados. Verifique sua conexão.', 'err');
-      await signOut(auth).catch(() => {});
-      mostrarTela('landingScreen');
-    } finally {
-      showLoading(false);
-    }
+    );
   } else {
     userData = null;
     atualizarNavbar(null);
@@ -223,6 +252,8 @@ function atualizarNavbar(user) {
   if (user) {
     document.getElementById('navUserName').textContent = user.nome || '—';
     document.getElementById('navAvatar').textContent   = iniciais(user.nome || '?');
+    const badge = document.getElementById('navBadge');
+    if (badge) badge.textContent = user.status === 'pendente' ? '⏳ Aguardando' : 'Cartão Ativo';
     guest.style.display = 'none';
     prof.style.display  = 'flex';
   } else {
@@ -490,18 +521,73 @@ async function confirmarPix() {
       numCartao,
       dataAdesao: hoje.toLocaleDateString('pt-BR'),
       dataVenc:   venc.toLocaleDateString('pt-BR'),
-      status:     'ativo',
+      status:     'pendente',  // aguarda validação manual do admin
       membros:    tempDeps.slice(),
       fotoUrl:    null,
       createdAt:  serverTimestamp(),
       updatedAt:  serverTimestamp(),
     };
     await setDoc(doc(db, 'users', createdUser.uid), docData);
-    userData      = { ...docData };
+    // Guarda localmente para preencher tela pendente imediatamente
+    userData      = { uid: createdUser.uid, ...docData };
     isRegistering = false;
-    atualizarNavbar(userData);
     showLoading(false);
-    mostrarStep('ok');
+
+    // Abre WhatsApp com mensagem automática
+    const codigoFmt  = formatarCodigo(numCartao);
+    const membrosTxt = tempDeps.length
+      ? tempDeps.map(m => '- ' + m.nome + ' (' + m.parentesco + ')').join('\n')
+      : '- Nenhum participante adicionado.';
+    const partes = [
+      'Ola, MotaLab!',
+      '',
+      'Acabei de me cadastrar para o *Cartao Fidelidade MotaLab* e realizei o pagamento de *R$ 70,00* via Pix.',
+      '',
+      '*Meus dados:*',
+      '- Nome: '         + tempCadData.nome,
+      '- CPF: '          + tempCadData.cpf,
+      '- E-mail: '       + tempCadData.email,
+      '- Telefone: '     + tempCadData.tel,
+      '- Nr do Cartao: ' + codigoFmt,
+      '',
+      '*Participantes do plano:*',
+      membrosTxt,
+      '',
+      'Segue em anexo o *comprovante do pagamento Pix*.',
+      '',
+      'Aguardo a ativacao do meu cartao. Obrigado(a)!',
+    ];
+    window.open('https://wa.me/' + CFG.WPP_NUM + '?text=' + encodeURIComponent(partes.join('\n')), '_blank');
+
+    // Abre a tela pendente com dados já preenchidos
+    fecharModal();
+    mostrarTelaPendente(userData);
+
+    // CRÍTICO: onAuthStateChanged foi bloqueado pelo isRegistering=true durante o cadastro.
+    // Por isso precisamos ativar o onSnapshot manualmente aqui para escutar
+    // quando o admin ativar o cartão.
+    if (unsubUserDoc) { unsubUserDoc(); unsubUserDoc = null; }
+    unsubUserDoc = onSnapshot(
+      doc(db, 'users', createdUser.uid),
+      (snap) => {
+        if (!snap.exists()) return;
+        const d = snap.data();
+        userData = { uid: createdUser.uid, ...d };
+        if (d.status === 'ativo') {
+          mostrarTela('homeScreen');
+          try {
+            atualizarNavbar(userData);
+            preencherHome();
+          } catch(e) {
+            console.error('[preencherHome/pix]', e);
+          }
+          showToast('🎉 Cartão ativado! Bem-vindo(a), ' + primeiroNome(d.nome) + '!', 'ok');
+        } else if (d.status === 'pendente') {
+          mostrarTelaPendente(d);
+        }
+      }
+    );
+
   } catch (err) {
     isRegistering = false;
     showLoading(false);
@@ -531,6 +617,21 @@ window.confirmarPix = confirmarPix;
 
 function irHome() { fecharModal(); preencherHome(); mostrarTela('homeScreen'); }
 window.irHome = irHome;
+
+/* ================================================================
+   TELA PENDENTE — aguarda validação do admin
+   ================================================================ */
+function mostrarTelaPendente(d) {
+  const el = document.getElementById('pendingScreen');
+  if (!el) { mostrarTela('landingScreen'); return; }
+  console.log('[PEND] nome:', d.nome, '| numCartao:', d.numCartao);
+  const nEl = document.getElementById('pend-nome');
+  const cEl = document.getElementById('pend-codigo');
+  if (nEl) nEl.textContent = d.nome ? primeiroNome(d.nome) : '—';
+  if (cEl) cEl.textContent = d.numCartao ? formatarCodigo(d.numCartao) : '—';
+  atualizarNavbar(d);
+  mostrarTela('pendingScreen');
+}
 
 /* ================================================================
    HOME — PREENCHER TELA
@@ -767,6 +868,7 @@ window.flipCard = flipCard;
 async function logout() {
   const ok = await confirmarAcao('Deseja sair da sua conta?', 'logout');
   if (!ok) return;
+  if (unsubUserDoc) { unsubUserDoc(); unsubUserDoc = null; }
   await signOut(auth);
   userData = null; cardFlipped = false;
   document.getElementById('dcInner')?.classList.remove('flipped');
@@ -777,7 +879,8 @@ async function logout() {
 window.logout = logout;
 
 function goHome() {
-  if (userData?.status === 'ativo') mostrarTela('homeScreen');
+  if (userData?.status === 'ativo')      mostrarTela('homeScreen');
+  else if (userData?.status === 'pendente') mostrarTelaPendente(userData);
   else { mostrarTela('landingScreen'); window.scrollTo(0,0); }
 }
 window.goHome = goHome;

@@ -38,7 +38,7 @@
       <div class="np-avatar" id="navAvatar">M</div>
       <div class="np-info">
         <div class="np-name" id="navUserName">—</div>
-        <div class="np-badge">Cartão Ativo</div>
+        <div class="np-badge" id="navBadge">Cartão Ativo</div>
       </div>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
@@ -108,6 +108,60 @@
     <p><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="#fff" d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91c0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23c-1.48 0-2.93-.39-4.19-1.15l-.3-.17l-3.12.82l.83-3.04l-.2-.32a8.2 8.2 0 0 1-1.26-4.38c.01-4.54 3.7-8.24 8.25-8.24M8.53 7.33c-.16 0-.43.06-.66.31c-.22.25-.87.86-.87 2.07c0 1.22.89 2.39 1 2.56c.14.17 1.76 2.67 4.25 3.73c.59.27 1.05.42 1.41.53c.59.19 1.13.16 1.56.1c.48-.07 1.46-.6 1.67-1.18s.21-1.07.15-1.18c-.07-.1-.23-.16-.48-.27c-.25-.14-1.47-.74-1.69-.82c-.23-.08-.37-.12-.56.12c-.16.25-.64.81-.78.97c-.15.17-.29.19-.53.07c-.26-.13-1.06-.39-2-1.23c-.74-.66-1.23-1.47-1.38-1.72c-.12-.24-.01-.39.11-.5c.11-.11.27-.29.37-.44c.13-.14.17-.25.25-.41c.08-.17.04-.31-.02-.43c-.06-.11-.56-1.35-.77-1.84c-.2-.48-.4-.42-.56-.43c-.14 0-.3-.01-.47-.01" stroke-width="0.8" stroke="#fff"/></svg> <a href="tel:83988695500">(83) 98869-5500</a> · <a href="tel:83991239706">(83) 99123-9706</a></p>
     <p class="footer-copy">© 2026 MotaLab. Todos os direitos reservados.</p>
   </footer>
+</div>
+
+<!-- TELA PENDENTE — aguardando validação -->
+<div class="screen" id="pendingScreen">
+  <div class="pend-wrap">
+    <div class="pend-card">
+      <div class="pend-icon-wrap">
+        <svg viewBox="0 0 48 48" fill="none" width="52" height="52">
+          <circle cx="24" cy="24" r="22" stroke="#3DBFB8" stroke-width="3" fill="#E0F7F6"/>
+          <path d="M24 14v10l6 4" stroke="#166B67" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="pend-title">Olá, <span id="pend-nome">—</span>!</h2>
+      <p class="pend-sub">Seu cadastro foi registrado.<br>Estamos aguardando a <strong>confirmação do seu pagamento</strong> pela equipe MotaLab.</p>
+      <div class="pend-code-box">
+        <div class="pend-code-lbl">Nº do seu cartão reservado</div>
+        <div class="pend-code" id="pend-codigo">—</div>
+      </div>
+      <div class="pend-steps">
+        <div class="ps-item ps-done">
+          <div class="ps-dot-wrap"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><circle cx="8" cy="8" r="8" fill="#10B981"/><path d="M4 8l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span>Cadastro realizado</span>
+        </div>
+        <div class="ps-item ps-done">
+          <div class="ps-dot-wrap"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><circle cx="8" cy="8" r="8" fill="#10B981"/><path d="M4 8l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span>Comprovante enviado pelo WhatsApp</span>
+        </div>
+        <div class="ps-item ps-cur">
+          <div class="ps-dot-wrap ps-spin-wrap">
+            <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><circle cx="8" cy="8" r="7" stroke="#3DBFB8" stroke-width="2" stroke-dasharray="22 10"/></svg>
+          </div>
+          <span>Aguardando confirmação do pagamento</span>
+        </div>
+        <div class="ps-item ps-next">
+          <div class="ps-dot-wrap"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><circle cx="8" cy="8" r="7" stroke="#D1D5DB" stroke-width="2"/></svg></div>
+          <span>Cartão ativado pelo MotaLab</span>
+        </div>
+      </div>
+      <div class="pend-contact">
+        <p>Dúvidas? Fale conosco:</p>
+        <div class="pend-contact-btns">
+          <a href="https://wa.me/5583988695500" target="_blank" class="pend-wpp-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967c-.273-.099-.471-.148-.67.15c-.197.297-.767.966-.94 1.164c-.173.199-.347.223-.644.075c-.297-.15-1.255-.463-2.39-1.475c-.883-.788-1.48-1.761-1.653-2.059c-.173-.297-.018-.458.13-.606c.134-.133.298-.347.446-.52c.149-.174.198-.298.298-.497c.099-.198.05-.371-.025-.52c-.075-.149-.669-1.612-.916-2.207c-.242-.579-.487-.5-.669-.51a13 13 0 0 0-.57-.01c-.198 0-.52.074-.792.372c-.272.297-1.04 1.016-1.04 2.479c0 1.462 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487c.709.306 1.262.489 1.694.625c.712.227 1.36.195 1.871.118c.571-.085 1.758-.719 2.006-1.413c.248-.694.248-1.289.173-1.413c-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214l-3.741.982l.998-3.648l-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884c2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+            WhatsApp
+          </a>
+          <a href="tel:83988695500" class="pend-tel-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg>
+            Ligar
+          </a>
+        </div>
+      </div>
+      <button class="pend-logout" onclick="logout()">Sair da conta</button>
+    </div>
+  </div>
 </div>
 
 <!-- TELA 2 — HOME DO USUÁRIO -->
@@ -281,21 +335,72 @@
 
     <div id="s-pix" class="modal-body" style="display:none;">
       <div class="modal-title">Pagamento via Pix</div>
-      <div class="modal-desc">Realize o pagamento e seu cartão será ativado <strong>instantaneamente</strong>.</div>
-      <div class="pix-valor"><div class="pv-price"><sup>R$</sup>70<span>,00</span></div><div class="pv-label">Adesão Anual · Cartão Fidelidade MotaLab</div></div>
-      <div class="pix-qr-box"><div class="pix-qr-title">Escaneie o QR Code Pix</div><div class="pix-qr-wrap"><img id="pixQrImg" width="160" height="160" alt="QR Code Pix" style="display:block;border-radius:6px;"></div><p class="pix-qr-hint">Aponte a câmera do banco ou use a chave abaixo.</p></div>
-      <div class="pix-key-box"><div class="pk-label">Chave Pix — CNPJ MotaLab</div><div class="pk-value">43.909.626/0001-28</div><button class="copy-btn" onclick="copiarPix()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar chave Pix</button></div>
-      <div class="pix-instr"><strong>Como pagar:</strong><br>1. Escaneie o QR Code <em>ou</em> abra o app do banco → Pix<br>2. Cole a chave e confirme R$ 70,00<br>3. Clique em "Já realizei o pagamento" abaixo</div>
-      <div class="pix-notice"><span class="pn-dot"></span>Após pagar, clique abaixo para ativar seu cartão imediatamente.</div>
-      <button class="btn-primary" onclick="confirmarPix()">Já realizei o pagamento — Ativar meu cartão</button>
+      <div class="modal-desc">Faça o pagamento, tire o comprovante e envie pelo WhatsApp. Seu cartão será ativado após a confirmação.</div>
+
+      <!-- Valor -->
+      <div class="pix-valor">
+        <div class="pv-price"><sup>R$</sup>70<span>,00</span></div>
+        <div class="pv-label">Adesão Anual · Cartão Fidelidade MotaLab</div>
+      </div>
+
+      <!-- Como funciona -->
+      <div class="pix-how">
+        <div class="pix-how-title">Como funciona?</div>
+        <div class="pix-how-steps">
+          <div class="phs"><div class="phs-num">1</div><div class="phs-txt">Escaneie o QR Code ou copie a chave Pix abaixo e realize o pagamento de <strong>R$ 70,00</strong> no seu banco.</div></div>
+          <div class="phs"><div class="phs-num">2</div><div class="phs-txt">Salve o <strong>comprovante</strong> do pagamento gerado pelo seu banco.</div></div>
+          <div class="phs"><div class="phs-num">3</div><div class="phs-txt">Clique em <strong>"Enviar comprovante pelo WhatsApp"</strong> — uma mensagem automática com seus dados será gerada.</div></div>
+          <div class="phs"><div class="phs-num">4</div><div class="phs-txt">Annexe o comprovante na conversa e envie. Nossa equipe irá <strong>validar e ativar seu cartão</strong> em breve.</div></div>
+        </div>
+      </div>
+
+      <!-- QR Code da pasta img -->
+      <div class="pix-qr-box">
+        <div class="pix-qr-title">📱 Escaneie o QR Code Pix</div>
+        <div class="pix-qr-wrap">
+          <img src="img/qrcode.png" alt="QR Code Pix MotaLab" class="pix-qr-static">
+        </div>
+        <p class="pix-qr-hint">Aponte a câmera do seu banco para o QR Code ou use a chave abaixo.</p>
+      </div>
+
+      <!-- Chave Pix -->
+      <div class="pix-key-box">
+        <div class="pk-label">📱 Chave Pix — Telefone MotaLab</div>
+        <div class="pk-value">83988695500</div>
+        <button class="copy-btn" onclick="copiarPix()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copiar chave Pix
+        </button>
+      </div>
+
+      <!-- Aviso pendente -->
+      <div class="pix-notice pix-notice-pend">
+        <span class="pn-dot"></span>
+        <span>Após pagar, envie o comprovante pelo WhatsApp para ativarmos seu cartão.</span>
+      </div>
+
+      <!-- Botão WhatsApp -->
+      <button class="btn-whatsapp" onclick="confirmarPix()">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967c-.273-.099-.471-.148-.67.15c-.197.297-.767.966-.94 1.164c-.173.199-.347.223-.644.075c-.297-.15-1.255-.463-2.39-1.475c-.883-.788-1.48-1.761-1.653-2.059c-.173-.297-.018-.458.13-.606c.134-.133.298-.347.446-.52c.149-.174.198-.298.298-.497c.099-.198.05-.371-.025-.52c-.075-.149-.669-1.612-.916-2.207c-.242-.579-.487-.5-.669-.51a13 13 0 0 0-.57-.01c-.198 0-.52.074-.792.372c-.272.297-1.04 1.016-1.04 2.479c0 1.462 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487c.709.306 1.262.489 1.694.625c.712.227 1.36.195 1.871.118c.571-.085 1.758-.719 2.006-1.413c.248-.694.248-1.289.173-1.413c-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214l-3.741.982l.998-3.648l-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884c2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+        Paguei! Enviar comprovante pelo WhatsApp
+      </button>
       <button class="btn-secondary" onclick="voltarDep()">Voltar</button>
     </div>
 
     <div id="s-ok" class="modal-body" style="display:none;text-align:center;">
-      <div class="success-check"><svg viewBox="0 0 40 40" fill="none"><path d="M8 20 L16 28 L32 12" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="modal-title" style="text-align:center;">Cartão ativado!</div>
-      <div class="modal-desc" style="text-align:center;margin-top:8px;">Seu Cartão Fidelidade MotaLab está ativo e pronto para uso.</div>
-      <button class="btn-primary" style="margin-top:20px;" onclick="irHome()">Ver meu Cartão Digital</button>
+      <div class="success-check pending-check">
+        <svg viewBox="0 0 40 40" fill="none"><path d="M12 20h8M20 12v8" stroke="white" stroke-width="3.5" stroke-linecap="round"/></svg>
+      </div>
+      <div class="modal-title" style="text-align:center;">Comprovante enviado! ⏳</div>
+      <div class="modal-desc" style="text-align:center;margin-top:8px;line-height:1.6;">
+        Seu cadastro foi registrado com sucesso.<br>
+        Assim que nossa equipe confirmar o pagamento pelo WhatsApp, <strong>seu cartão será ativado</strong>.
+      </div>
+      <div class="pend-info-box">
+        <div class="pib-row">📞 <strong>(83) 98869-5500</strong> · <strong>(83) 99123-9706</strong></div>
+        <div class="pib-row">⏰ Ativação em até <strong>24 horas úteis</strong></div>
+      </div>
+      <button class="btn-secondary" style="margin-top:16px;" onclick="fecharModal()">Fechar</button>
     </div>
   </div>
 </div>

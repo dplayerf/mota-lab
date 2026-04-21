@@ -527,3 +527,81 @@ footer a { color:var(--teal-light); text-decoration:none; }
 .container {
   text-align: center;
 }
+/* =====================================================
+   STEP PIX — novo layout com imagem e WhatsApp
+   ===================================================== */
+.pix-qr-static {
+  display:block; width:160px; height:160px;
+  border-radius:8px; image-rendering:-webkit-optimize-contrast;
+}
+
+/* Como funciona */
+.pix-how { background:#F0FDFC; border:1px solid rgba(61,191,184,.25); border-radius:14px; padding:14px 16px; margin-bottom:14px; }
+.pix-how-title { font-family:'Montserrat',sans-serif; font-size:12px; font-weight:800; color:var(--teal-deep); text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; }
+.pix-how-steps { display:flex; flex-direction:column; gap:8px; }
+.phs { display:flex; align-items:flex-start; gap:10px; font-size:13px; color:var(--navy); line-height:1.5; }
+.phs-num { width:22px; height:22px; border-radius:50%; background:var(--teal); color:#fff; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.phs-txt strong { color:var(--teal-deep); }
+
+/* Aviso pendente */
+.pix-notice-pend { background:#FEF3C7; border-left:3px solid var(--yellow); border-radius:10px; }
+.pix-notice-pend .pn-dot { background:var(--yellow); }
+
+/* Botão WhatsApp */
+.btn-whatsapp {
+  width:100%; padding:14px; background:linear-gradient(135deg,#25D366,#128C7E);
+  color:#fff; border:none; border-radius:13px;
+  font-size:15px; font-weight:700; font-family:'Montserrat',sans-serif;
+  cursor:pointer; margin-top:6px; transition:.2s;
+  display:flex; align-items:center; justify-content:center; gap:9px;
+}
+.btn-whatsapp:hover { transform:translateY(-1px); box-shadow:0 8px 24px rgba(37,211,102,.4); }
+
+/* Caixa de info pós-envio */
+.pend-info-box { background:#F0FDFC; border:1px solid rgba(61,191,184,.25); border-radius:12px; padding:14px 16px; margin-top:16px; text-align:left; }
+.pib-row { font-size:13px; color:var(--navy); line-height:1.8; }
+
+/* Check pendente */
+.pending-check { background:linear-gradient(135deg,var(--teal),var(--teal-dark)); }
+
+/* =====================================================
+   TELA PENDENTE
+   ===================================================== */
+#pendingScreen {
+  padding-top:70px; min-height:100vh;
+  background:linear-gradient(145deg,var(--teal-navy) 0%,var(--teal-deep) 55%,var(--teal-dark) 100%);
+  align-items:center; justify-content:center;
+  padding:90px 20px 40px;
+}
+#pendingScreen.active { display:flex !important; }
+.pend-wrap { width:100%; max-width:460px; }
+.pend-card { background:#fff; border-radius:24px; padding:36px 28px; text-align:center; box-shadow:0 32px 80px rgba(0,0,0,0.3); }
+.pend-icon-wrap { margin-bottom:14px; }
+.pend-icon-wrap svg { animation:pendpulse 2.2s ease-in-out infinite; }
+@keyframes pendpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.pend-title { font-family:'Montserrat',sans-serif; font-size:21px; font-weight:900; color:var(--navy); margin-bottom:8px; }
+.pend-title span { color:var(--teal-deep); }
+.pend-sub { font-size:14px; color:var(--gray); line-height:1.6; margin-bottom:20px; }
+.pend-code-box { background:var(--teal-pale); border:2px solid rgba(61,191,184,.3); border-radius:14px; padding:14px 18px; margin-bottom:20px; }
+.pend-code-lbl { font-size:10px; font-weight:700; color:var(--teal-deep); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+.pend-code { font-family:'Montserrat',sans-serif; font-size:26px; font-weight:900; color:var(--teal-deep); letter-spacing:4px; }
+
+.pend-steps { text-align:left; margin-bottom:20px; display:flex; flex-direction:column; gap:2px; }
+.ps-item { display:flex; align-items:center; gap:10px; padding:9px 0; font-size:13px; color:var(--gray); border-bottom:1px solid #F3F4F6; }
+.ps-item:last-child { border-bottom:none; }
+.ps-item.ps-done { color:var(--green); }
+.ps-item.ps-cur  { color:var(--teal-deep); font-weight:700; }
+.ps-item.ps-next { color:#9CA3AF; }
+.ps-dot-wrap { flex-shrink:0; display:flex; align-items:center; }
+.ps-spin-wrap svg { animation:spin .9s linear infinite; }
+
+.pend-contact { margin-bottom:18px; }
+.pend-contact p { font-size:12px; color:var(--gray); margin-bottom:10px; }
+.pend-contact-btns { display:flex; gap:10px; justify-content:center; }
+.pend-wpp-btn { display:flex; align-items:center; gap:6px; background:#25D366; color:#fff; text-decoration:none; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:700; font-family:'Montserrat',sans-serif; transition:.2s; }
+.pend-wpp-btn:hover { background:#128C7E; }
+.pend-tel-btn { display:flex; align-items:center; gap:6px; background:var(--teal-pale); color:var(--teal-deep); text-decoration:none; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:700; font-family:'Montserrat',sans-serif; transition:.2s; }
+.pend-tel-btn:hover { background:#C8F0EE; }
+.pend-logout { background:transparent; border:1.5px solid #E5E7EB; border-radius:11px; padding:10px 22px; font-size:13px; color:var(--gray); cursor:pointer; font-family:'Nunito',sans-serif; transition:.2s; }
+.pend-logout:hover { border-color:var(--red); color:var(--red); }
+@media(max-width:480px){ .pend-card { padding:28px 18px; } .pend-code { font-size:22px; } }
