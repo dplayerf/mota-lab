@@ -1596,6 +1596,7 @@ footer a {
 /* ── FLIP CARD ── */
 .flip-wrap {
   perspective: 1200px;
+  -webkit-perspective: 1200px;
   margin-bottom: 10px;
 }
 
@@ -1621,7 +1622,9 @@ footer a {
   border-radius: 20px;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  overflow: hidden;
+  /* overflow:hidden removido — quebra preserve-3d no Safari/iOS */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  /* força GPU layer no Safari */
   box-shadow: 0 18px 54px rgba(14, 79, 77, 0.28), 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
